@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "lib": ["esnext"],
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": true,
+    "outDir": "dist",
+    "baseUrl": "src",
+    "skipLibCheck": true,
+    "strict": true,
+    "declaration": true
+  },
+  "ts-node": {
+    "swc": true
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules"]
+}
