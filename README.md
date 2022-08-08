@@ -67,4 +67,8 @@ const userRoute: FastifyPluginAsync = async (fastify) => {
 }
 
 export default userRoute
-    
+```
+
+## Papr Documentation
+
+Read the documentation at: [plexinc.github.io/papr](https://plexinc.github.io/papr/)

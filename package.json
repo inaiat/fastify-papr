@@ -1,6 +1,6 @@
 {
   "name": "@inaiat/fastify-papr",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Fastify Papr Plugin Integration",
   "type": "module",
   "engines": {
@@ -22,7 +22,15 @@
   "keywords": [
     "fastify",
     "mongodb",
-    "papr"
+    "papr",
+    "database",
+    "model",
+    "schema",
+    "json",
+    "json-schema",
+    "validation",
+    "typescript",
+    "types"
   ],
   "contributors": [
     "Inaiat <inaiat@gmail.com>"
