@@ -1,6 +1,6 @@
 # fastify-papr
 
-A fastify Papr plugin for fastify framework.
+A fastify Papr plugin integration.
 
 ## Getting started
 
@@ -20,11 +20,9 @@ const userSchema = schema({
   phone: types.string({ required: true, minLength: 8, maxLength: 20 }),
 })
 
-export type UserModel = Model<typeof userSchema[0], Partial<typeof userSchema[1]>>
-
 declare module 'fastify' {
   interface PaprModels {
-    user: UserModel
+    user: Model<typeof userSchema[0], Partial<typeof userSchema[1]>>
   }
 }
 
@@ -41,5 +39,32 @@ export default fp<FastifyPaprOptions>(
   },
   { name: 'papr' },
 )
+```
 
+How to use:
+```ts
+import { FastifyPluginAsync } from 'fastify'
+import { Static, Type } from '@sinclair/typebox'
+
+const userDto = Type.Object({
+  name: Type.String({ maxLength: 100, minLength: 10 }),
+  phone: Type.String({ maxLength: 20, minLength: 8 }),
+})
+
+const userRoute: FastifyPluginAsync = async (fastify) => {
+  fastify.post<{ readonly Body: Static<typeof userDto> }>(
+    '/user',
+    {
+      schema: {
+        body: userDto,
+      },
+    },
+    async (req) => {
+      const result = await fastify.papr.user.insertOne(req.body)
+      return result
+    },
+  )
+}
+
+export default userRoute
     
