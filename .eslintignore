@@ -1,6 +1,0 @@
-.eslintrc.cjs
-node_modules
-dist
-jest.config.js
-coverage
-report
