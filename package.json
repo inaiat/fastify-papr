@@ -7,12 +7,11 @@
     "node": ">=16"
   },
   "exports": "./dist/index.js",
-	"types": "./dist/index.d.ts",
+  "types": "./dist/index.d.ts",
   "scripts": {
-    "test": "ava",
+    "test": "xo && ava",
     "build": "rimraf ./dist && mkdir dist && tsc --outDir dist && git rev-parse HEAD > BUILD_SHA",
-    "lint": "eslint . --fix",
-    "lint:fix": "prettier --loglevel warn --write \"src/**/*.{ts,tsx}\" && eslint \"*/**/*.{js,ts,tsx}\" --quiet --fix",
+    "lint": "xo --fix",
     "prepublishOnly": "npm run build"
   },
   "repository": {
@@ -44,8 +43,9 @@
   ],
   "homepage": "https://github.com/inaiat/fastify-papr.git",
   "dependencies": {
-    "fastify-plugin": "^4.1.0",
-    "papr": "^7.2.1"
+    "fastify-plugin": "^4.2.0",
+    "papr": "^7.2.1",
+    "xo": "^0.51.0"
   },
   "peerDependencies": {
     "fastify": "^4.4.0",
@@ -53,20 +53,14 @@
   },
   "devDependencies": {
     "@swc/cli": "^0.1.57",
-    "@swc/core": "^1.2.224",
-    "@swc/helpers": "^0.4.3",
-    "@types/node": "18.6.4",
-    "@types/semver": "^7.3.10",
-    "@typescript-eslint/eslint-plugin": "^5.32.0",
-    "@typescript-eslint/parser": "^5.32.0",
+    "@swc/core": "^1.2.231",
+    "@swc/helpers": "^0.4.6",
+    "@types/node": "^18.7.3",
+    "@types/semver": "^7.3.12",
     "ava": "^4.3.1",
     "c8": "^7.12.0",
-    "eslint": "^8.21.0",
-    "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-prettier": "^4.2.1",
-    "fastify": "^4.3.0",
+    "fastify": "^4.4.0",
     "mongodb-memory-server": "^8.8.0",
-    "prettier": "^2.7.1",
     "rimraf": "^3.0.2",
     "semver": "^7.3.7",
     "ts-node": "^10.9.1",
@@ -85,6 +79,30 @@
     "nodeArguments": [
       "--loader=ts-node/esm"
     ]
+  },
+  "xo": {
+    "semicolon": false,
+    "ignores": [
+      "documentation/examples/*"
+    ],
+    "rules": {
+      "@typescript-eslint/no-empty-function": "off",
+      "n/no-deprecated-api": "off",
+      "n/prefer-global/url": "off",
+      "n/prefer-global/url-search-params": "off",
+      "@typescript-eslint/no-implicit-any-catch": "off",
+      "unicorn/prefer-node-protocol": "off",
+      "ava/assertion-arguments": "off",
+      "@typescript-eslint/no-unsafe-member-access": "off",
+      "@typescript-eslint/no-unsafe-return": "off",
+      "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/no-unsafe-call": "off",
+      "@typescript-eslint/await-thenable": "off",
+      "@typescript-eslint/no-redundant-type-constituents": "off",
+      "no-lone-blocks": "off",
+      "unicorn/no-await-expression-member": "off",
+      "@typescript-eslint/naming-convention": "off"
+    }
   },
   "config": {
     "mongodbMemoryServer": {
