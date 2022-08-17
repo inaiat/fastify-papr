@@ -3,9 +3,9 @@ import {BaseSchema, Model} from 'papr'
 import {FastifyPaprOptions, PaprModels} from './types.js'
 import {paprHelper} from './papr-helper.js'
 
-export const asModel = <TSchema extends BaseSchema, TDefaults extends Partial<TSchema>>(
+export const asModel = <TSchema extends BaseSchema>(
 	collectionName: string,
-	collectionSchema: [TSchema, TDefaults],
+	collectionSchema: [TSchema, Partial<TSchema>],
 ) => ({
 	collectionName,
 	collectionSchema,
