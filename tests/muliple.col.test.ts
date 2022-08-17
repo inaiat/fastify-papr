@@ -100,12 +100,12 @@ test('one collection with default values, insert and retrieve', async t => {
 		name: 'db1',
 		db: client.db(),
 		models: {
-			orderDefaults: asModel('user', orderSchemaWithDefaults),
+			orderDefaults: asModel('orderDefaults', orderSchemaWithDefaults),
 		},
 	})
 
 	const order = {orderNumber: 1234, description: 'notebook', date: new Date()}
-	const orderResult = await fastify.papr.order.insertOne(order)
+	const orderResult = await fastify.papr.orderDefaults.insertOne(order)
 
-	t.deepEqual(await fastify.papr.order.findById(orderResult._id), {_id: orderResult._id, ...order})
+	t.deepEqual(await fastify.papr.orderDefaults.findById(orderResult._id), {_id: orderResult._id, ...order})
 })
