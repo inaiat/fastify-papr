@@ -32,7 +32,8 @@
     "types"
   ],
   "contributors": [
-    "Inaiat <inaiat@gmail.com>"
+    "Inaiat <inaiat@gmail.com>",
+    "Daniel Molina <dgmolina.ti@gmail.com>"
   ],
   "license": "MIT",
   "licenses": [
@@ -48,18 +49,18 @@
     "xo": "^0.51.0"
   },
   "peerDependencies": {
-    "fastify": "^4.4.0",
+    "fastify": "^4.5.0",
     "mongodb": "^4.8.1"
   },
   "devDependencies": {
     "@swc/cli": "^0.1.57",
-    "@swc/core": "^1.2.231",
+    "@swc/core": "^1.2.237",
     "@swc/helpers": "^0.4.6",
-    "@types/node": "^18.7.3",
+    "@types/node": "^18.7.6",
     "@types/semver": "^7.3.12",
     "ava": "^4.3.1",
     "c8": "^7.12.0",
-    "fastify": "^4.4.0",
+    "fastify": "^4.5.0",
     "mongodb-memory-server": "^8.8.0",
     "rimraf": "^3.0.2",
     "semver": "^7.3.7",

@@ -16,10 +16,22 @@ const orderSchema = schema({
 	date: types.date({required: true}),
 })
 
+const orderSchemaWithDefaults = schema({
+	orderNumber: types.number({required: true}),
+	description: types.string({minLength: 5, required: true}),
+	date: types.date({required: true}),
+},
+{
+	defaults: {
+		orderNumber: 1,
+	},
+})
+
 declare module 'fastify' {
 	interface PaprModels {
 		user: Model<typeof userSchema[0], typeof userSchema[1]>;
 		order: Model<typeof orderSchema[0], typeof orderSchema[1]>;
+		orderDefaults: Model<typeof orderSchemaWithDefaults[0], typeof orderSchemaWithDefaults[1]>;
 	}
 }
 
@@ -75,4 +87,25 @@ test('validation failed with two col', async t => {
 	await t.throwsAsync(async () => fastify.papr.order.insertOne(order), {
 		instanceOf: MongoServerError,
 	})
+})
+
+test('one collection with default values, insert and retrieve', async t => {
+	const {server: fastify} = getConfiguredTestServer()
+
+	const server = await createMongoServer()
+
+	const client = await MongoClient.connect(server.getUri())
+
+	await fastify.register(fastifyPaprPlugin, {
+		name: 'db1',
+		db: client.db(),
+		models: {
+			orderDefaults: asModel('orderDefaults', orderSchemaWithDefaults),
+		},
+	})
+
+	const order = {description: 'notebook', date: new Date()}
+	const orderResult = await fastify.papr.orderDefaults.insertOne(order)
+
+	t.deepEqual(await fastify.papr.orderDefaults.findById(orderResult._id), {_id: orderResult._id, ...order, orderNumber: 1})
 })
