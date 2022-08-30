@@ -1,7 +1,8 @@
-import {FastifyInstance} from 'fastify'
-import {Db} from 'mongodb'
-import Papr, {BaseSchema} from 'papr'
-import {ModelRegistrationPair, PaprModels} from './types.js'
+import type {FastifyInstance} from 'fastify'
+import type {Db} from 'mongodb'
+import type {BaseSchema} from 'papr'
+import Papr from 'papr'
+import type {ModelRegistrationPair, PaprModels} from './types.js'
 
 export const paprHelper = (fastify: FastifyInstance, db: Db) => {
 	const papr = new Papr()

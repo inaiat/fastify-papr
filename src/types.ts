@@ -1,6 +1,6 @@
 import type {Model} from 'papr'
 import type {Db} from 'mongodb'
-import {asModel} from './index.js'
+import type {asModel} from './index.js'
 
 export type PaprModelItem = ReturnType<typeof asModel>
 

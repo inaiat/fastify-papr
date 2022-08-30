@@ -1,6 +1,6 @@
 import fp from 'fastify-plugin'
-import {BaseSchema, Model} from 'papr'
-import {FastifyPaprOptions, PaprModels} from './types.js'
+import type {BaseSchema, Model} from 'papr'
+import type {FastifyPaprOptions, PaprModels} from './types.js'
 import {paprHelper} from './papr-helper.js'
 
 export const asModel = <TSchema extends BaseSchema>(
@@ -22,7 +22,7 @@ const fastifyPaprPlugin = fp<FastifyPaprOptions>(
 			}
 
 			if (fastify.papr[name]) {
-				throw new Error('Connection name already registered: ' + name)
+				throw new Error(`Connection name already registered: ${name}`)
 			}
 
 			fastify.papr[name] = models as Model<any, any> & PaprModels
