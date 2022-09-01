@@ -1,4 +1,5 @@
-import {Model, schema, types} from 'papr'
+import type {Model} from 'papr'
+import {schema, types} from 'papr'
 import test from 'ava'
 import {MongoClient, MongoServerError} from 'mongodb'
 import fastifyPaprPlugin, {asModel} from '../src/index.js'
