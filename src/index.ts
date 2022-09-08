@@ -1,11 +1,11 @@
 import fp from 'fastify-plugin'
-import type {BaseSchema, Model} from 'papr'
+import type {BaseSchema, Model, SchemaOptions} from 'papr'
 import type {FastifyPaprOptions, PaprModels} from './types.js'
 import {paprHelper} from './papr-helper.js'
 
 export const asModel = <TSchema extends BaseSchema>(
 	collectionName: string,
-	collectionSchema: [TSchema, Partial<TSchema>],
+	collectionSchema: [TSchema, SchemaOptions<Partial<TSchema>>],
 ) => ({
 	collectionName,
 	collectionSchema,
