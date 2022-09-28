@@ -16,6 +16,7 @@ export type FastifyPaprOptions = {
 	name?: string;
 	db: Db;
 	models: ModelRegistrationPair<PaprModels>;
+	disableSchemaReconciliation?: boolean;
 }
 
 declare module 'fastify' {
