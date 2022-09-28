@@ -13,7 +13,7 @@ export const asModel = <TSchema extends BaseSchema>(
 
 const fastifyPaprPlugin = fp<FastifyPaprOptions>(
 	async (fastify, options) => {
-		const helper = paprHelper(fastify, options.db)
+		const helper = paprHelper(fastify, options.db, options.disableSchemaReconciliation)
 		const models = await helper.register(options.models)
 		const {name} = options
 		if (name) {

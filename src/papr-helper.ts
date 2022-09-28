@@ -4,7 +4,7 @@ import type {BaseSchema, SchemaOptions} from 'papr'
 import Papr from 'papr'
 import type {ModelRegistrationPair, PaprModels} from './types.js'
 
-export const paprHelper = (fastify: FastifyInstance, db: Db) => {
+export const paprHelper = (fastify: FastifyInstance, db: Db, disableSchemaReconciliation: boolean = false) => {
 	const papr = new Papr()
 	papr.initialize(db)
 
@@ -13,7 +13,11 @@ export const paprHelper = (fastify: FastifyInstance, db: Db) => {
 		collectionSchema: [TSchema, TOptions],
 	) => {
 		const model = papr.model(collectionName, collectionSchema)
-		await papr.updateSchema(model)
+
+		if (!disableSchemaReconciliation) {
+			await papr.updateSchema(model)
+		}
+
 		return model
 	}
 
