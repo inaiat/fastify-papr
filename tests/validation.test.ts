@@ -32,7 +32,7 @@ test('document failed with name and age', async t => {
     instanceOf: MongoServerError,
   })
 
-  const simpleError = new SimpleDocFailedValidationError(error as MongoServerError)
+  const simpleError = new SimpleDocFailedValidationError(error!)
 
   t.is(
     simpleError.schemaRulesNotSatisfied
@@ -60,7 +60,7 @@ test('simple doc failed validation should result undefined when schema rules not
     instanceOf: MongoServerError,
   })
 
-  const simpleError = new SimpleDocFailedValidationError(error as MongoServerError)
+  const simpleError = new SimpleDocFailedValidationError(error!)
 
   t.is(simpleError.schemaRulesNotSatisfiedAsString(), undefined)
 
