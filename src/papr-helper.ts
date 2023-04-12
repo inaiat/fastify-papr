@@ -39,6 +39,5 @@ export const paprHelper = (fastify: Readonly<FastifyInstance>, db: Db, disableSc
         }),
       ))
     },
-
   }
 }
