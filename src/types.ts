@@ -1,11 +1,16 @@
 import type {Model} from 'papr'
-import type {Db} from 'mongodb'
+import type {Db, IndexDescription} from 'mongodb'
 import type {asModel} from './index.js'
 
 export type PaprModelItem = ReturnType<typeof asModel>
 
 export type ModelRegistrationPair<T> = {
   [U in keyof T]: PaprModelItem
+}
+
+export type IndexesRegistrationPair = {
+  collectionName: string;
+  collectionIndexes: IndexDescription[];
 }
 
 export type PaprModels = Record<string, Model<any, any>>
@@ -17,6 +22,7 @@ export type FastifyPaprOptions = {
   db: Db;
   models: ModelRegistrationPair<PaprModels>;
   disableSchemaReconciliation?: boolean;
+  indexes?: IndexesRegistrationPair[];
 }
 
 declare module 'fastify' {
