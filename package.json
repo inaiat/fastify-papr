@@ -35,7 +35,8 @@
   ],
   "contributors": [
     "Inaiat <inaiat@gmail.com>",
-    "Daniel Molina <dgmolina.ti@gmail.com>"
+    "Daniel Molina <dgmolina.ti@gmail.com>",
+    "oMuriloDev omurilo"
   ],
   "license": "MIT",
   "licenses": [
@@ -47,29 +48,29 @@
   "homepage": "https://github.com/inaiat/fastify-papr.git",
   "dependencies": {
     "fastify-plugin": "^4.5.0",
-    "papr": "^11.1.0"
+    "papr": "^13.0.0"
   },
   "peerDependencies": {
-    "fastify": "^4.13.0",
-    "mongodb": "^5.1.0"
+    "fastify": "^4.15.0",
+    "mongodb": "^5.2.0"
   },
   "devDependencies": {
     "@swc/cli": "^0.1.62",
-    "@swc/core": "^1.3.37",
-    "@swc/helpers": "^0.4.14",
-    "@types/node": "^18.14.2",
+    "@swc/core": "^1.3.50",
+    "@swc/helpers": "^0.5.0",
+    "@types/node": "^18.15.11",
     "@types/semver": "^7.3.13",
     "ava": "^5.2.0",
     "c8": "^7.13.0",
     "istanbul-badges-readme": "^1.8.5",
-    "mongodb-memory-server": "^8.11.5",
-    "rimraf": "^4.1.3",
-    "semver": "^7.3.8",
+    "mongodb-memory-server": "^8.12.2",
+    "rimraf": "^5.0.0",
+    "semver": "^7.4.0",
     "ts-node": "^10.9.1",
-    "typescript": "^4.9.5",
-    "xo": "^0.53.1",
+    "typescript": "^5.0.4",
+    "xo": "^0.54.1",
     "eslint-plugin-unused-imports": "^2.0.0",
-    "eslint-plugin-functional": "4.4.1",
+    "eslint-plugin-functional": "5.0.7",
     "eslint-plugin-prettier": "4.2.1"
   },
   "files": [
@@ -102,10 +103,7 @@
       "unused-imports"
     ],
     "extends": [
-      "plugin:functional/no-mutations",
-      "plugin:functional/stylistic",
-      "plugin:functional/no-exceptions",
-      "plugin:functional/external-recommended"
+      "plugin:functional/lite"
     ],
     "rules": {
       "capitalized-comments": "off",
@@ -125,14 +123,22 @@
       "@typescript-eslint/object-curly-spacing": "off",
       "@typescript-eslint/no-unused-vars": "error",
       "unused-imports/no-unused-imports": "error",
+      "functional/no-method-signature": "off",
+      "functional/prefer-readonly-type": "off",
+      "functional/no-classes": "off",
+      "functional/no-return-void": "off",
       "functional/no-let": [
         "error",
         {
-          "allowLocalMutation": true
+          "ignorePattern": "^mutable_"
         }
       ],
-      "functional/no-method-signature": "off",
-      "functional/prefer-readonly-type": "off"
+      "functional/immutable-data": [
+        "error",
+        {
+          "ignoreAccessorPattern": "**.mutable_*"
+        }
+      ]
     },
     "overrides": [
       {

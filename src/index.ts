@@ -5,6 +5,7 @@ import {paprHelper} from './papr-helper.js'
 
 export const asModel = <TSchema extends BaseSchema>(
   collectionName: string,
+  // eslint-disable-next-line functional/prefer-immutable-types
   collectionSchema: [TSchema, SchemaOptions<Partial<TSchema>>],
 ) => ({
   collectionName,
@@ -12,26 +13,24 @@ export const asModel = <TSchema extends BaseSchema>(
 })
 
 const fastifyPaprPlugin = fp<FastifyPaprOptions>(
-  async (fastify, options) => {
-    const helper = paprHelper(fastify, options.db, options.disableSchemaReconciliation)
+  async (mutable_fastify, options) => {
+    const helper = paprHelper(mutable_fastify, options.db, options.disableSchemaReconciliation)
     const models = await helper.register(options.models)
     const {name} = options
     if (name) {
-      if (!fastify.papr) {
-        fastify.decorate('papr', models)
+      if (!mutable_fastify.papr) {
+        mutable_fastify.decorate('papr', models)
       }
 
-      if (fastify.papr[name]) {
-        // eslint-disable-next-line functional/no-throw-statement
+      if (mutable_fastify.papr[name]) {
         throw new Error(`Connection name already registered: ${name}`)
       }
 
-      // eslint-disable-next-line functional/immutable-data
-      fastify.papr[name] = models as Model<any, any> & PaprModels
+      mutable_fastify.papr[name] = models as Model<any, any> & PaprModels
     }
 
-    if (!fastify.papr) {
-      fastify.decorate('papr', models)
+    if (!mutable_fastify.papr) {
+      mutable_fastify.decorate('papr', models)
     }
   },
   {fastify: '4.x', name: 'fastify-papr-plugin'},
