@@ -28,10 +28,10 @@ export type DocumentFailedValidation = {
 
 export type SimpleDocFailedValidation = Array<Record<string, Array<Record<string, PropertyDetail[]>>>> | undefined
 
-const prettyPropertiesNotSatisfied = (propertiesNotSatisfied: PropertiesNotSatisfied[]) =>
+const prettyPropertiesNotSatisfied = (propertiesNotSatisfied: readonly PropertiesNotSatisfied[]) =>
   propertiesNotSatisfied?.map(i => ({[i.propertyName]: i.details}))
 
-export function tryExtractSimpleDocFailedValidation(error: MongoServerError): SimpleDocFailedValidation | undefined {
+export function tryExtractSimpleDocFailedValidation(error: Readonly<MongoServerError>): SimpleDocFailedValidation | undefined {
   if (error instanceof MongoServerError && error.code === 121) {
     const schemaRulesNotSatisfied = (error?.errInfo as DocumentFailedValidation)?.details?.schemaRulesNotSatisfied
 
@@ -49,7 +49,7 @@ export class SimpleDocFailedValidationError extends Error {
   schemaRulesNotSatisfied?: SimpleDocFailedValidation
   documentFailedValidation: boolean
 
-  constructor(mongoError: MongoServerError) {
+  constructor(mongoError: Readonly<MongoServerError>) {
     super(mongoError.message, mongoError)
     this.schemaRulesNotSatisfied = tryExtractSimpleDocFailedValidation(mongoError)
     this.documentFailedValidation = this.schemaRulesNotSatisfied !== undefined
