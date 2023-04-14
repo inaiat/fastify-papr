@@ -1,5 +1,6 @@
 import fp from 'fastify-plugin'
 import type {BaseSchema, Model, SchemaOptions} from 'papr'
+import { IndexDescription } from 'mongodb'
 import type {FastifyPaprOptions, PaprModels} from './types.js'
 import {paprHelper} from './papr-helper.js'
 
@@ -12,10 +13,12 @@ export const asModel = <TSchema extends BaseSchema>(
   collectionSchema,
 })
 
+export const asIndexes = (collectionName: string, collectionIndexes: readonly IndexDescription[]) => ({collectionName, collectionIndexes})
+
 const fastifyPaprPlugin = fp<FastifyPaprOptions>(
   async (mutable_fastify, options) => {
     const helper = paprHelper(mutable_fastify, options.db, options.disableSchemaReconciliation)
-    const models = await helper.register(options.models)
+    const models = await helper.register(options.models, options.indexes)
     const {name} = options
     if (name) {
       if (!mutable_fastify.papr) {
