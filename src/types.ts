@@ -10,7 +10,7 @@ export type ModelRegistrationPair<T> = {
 
 export type IndexesRegistrationPair = {
   collectionName: string;
-  collectionIndexes: IndexDescription[];
+  collectionIndexes: readonly IndexDescription[];
 }
 
 export type PaprModels = Record<string, Model<any, any>>
@@ -22,7 +22,7 @@ export type FastifyPaprOptions = {
   db: Db;
   models: ModelRegistrationPair<PaprModels>;
   disableSchemaReconciliation?: boolean;
-  indexes?: IndexesRegistrationPair[];
+  indexes?: readonly IndexesRegistrationPair[];
 }
 
 declare module 'fastify' {

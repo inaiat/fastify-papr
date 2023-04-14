@@ -24,7 +24,7 @@ export const paprHelper = (fastify: Readonly<FastifyInstance>, db: Db, disableSc
   const registerIndexes = async (collectionName: string, indexes: readonly IndexDescription[]) => db.collection(collectionName).createIndexes(indexes as IndexDescription[])
 
   return {
-    async register(schemas: ModelRegistrationPair<PaprModels>, indexes: IndexesRegistrationPair[] = []): Promise<PaprModels> {
+    async register(schemas: ModelRegistrationPair<PaprModels>, indexes: readonly IndexesRegistrationPair[] = []): Promise<PaprModels> {
       indexes.map(async ({ collectionIndexes, collectionName}) => {
         const index = await registerIndexes(collectionName, collectionIndexes)
         fastify.log.info(`Indexes to ${collectionName} created`)
