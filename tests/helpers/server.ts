@@ -5,7 +5,7 @@ import {MongoMemoryServer} from 'mongodb-memory-server'
 import {MongoClient} from 'mongodb'
 
 export const getTestServer = () => {
-  const server = fastify()
+  const server = fastify({ logger: true})
 
   server.setErrorHandler((error, request, reply) => {
     console.error(error)
