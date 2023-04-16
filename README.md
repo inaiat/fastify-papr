@@ -1,4 +1,5 @@
 # fastify-papr
+
 ![Statements](https://img.shields.io/badge/statements-98.75%25-brightgreen.svg?style=flat) ![Branches](https://img.shields.io/badge/branches-85%25-yellow.svg?style=flat) ![Functions](https://img.shields.io/badge/functions-100%25-brightgreen.svg?style=flat) ![Lines](https://img.shields.io/badge/lines-98.75%25-brightgreen.svg?style=flat)
 
 A fastify Papr plugin integration.
@@ -10,9 +11,10 @@ yarn add @inaiat/fastify-papr @fastify/mongodb
 ```
 
 Next, set up the plugin:
+
 ```ts
 import fastifyMongodb from '@fastify/mongodb'
-import fastifyPaprPlugin, { asModel, FastifyPaprOptions } from ' @inaiat/fastify-papr'
+import fastifyPaprPlugin, { asCollection, FastifyPaprOptions } from ' @inaiat/fastify-papr'
 import fp from 'fastify-plugin'
 import { Model, schema, types } from 'papr'
 
@@ -20,6 +22,8 @@ const userSchema = schema({
   name: types.string({ required: true, minLength: 10, maxLength: 100 }),
   phone: types.string({ required: true, minLength: 8, maxLength: 20 }),
 })
+
+const userIndexes = [{ key: { name: 1 } }]
 
 declare module 'fastify' {
   interface PaprModels {
@@ -35,7 +39,7 @@ export default fp<FastifyPaprOptions>(
 
     await fastify.register(fastifyPaprPlugin, {
       db: fastify.mongo.client.db('test'),
-      models: { user: asModel('user', userSchema) },
+      models: { user: asCollection('user', userSchema, userIndexes) },
     })
   },
   { name: 'papr' },
@@ -43,6 +47,7 @@ export default fp<FastifyPaprOptions>(
 ```
 
 How to use:
+
 ```ts
 import { FastifyPluginAsync } from 'fastify'
 import { Static, Type } from '@sinclair/typebox'

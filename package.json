@@ -1,6 +1,6 @@
 {
   "name": "@inaiat/fastify-papr",
-  "version": "4.0.1",
+  "version": "5.0.0",
   "description": "Fastify Papr Plugin Integration",
   "type": "module",
   "engines": {
@@ -73,9 +73,7 @@
     "eslint-plugin-functional": "5.0.7",
     "eslint-plugin-prettier": "4.2.1"
   },
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "directories": {
     "test": "test"
   },
@@ -83,28 +81,16 @@
     "extensions": {
       "ts": "module"
     },
-    "nodeArguments": [
-      "--loader=ts-node/esm"
-    ]
+    "nodeArguments": ["--loader=ts-node/esm"]
   },
   "c8": {
-    "reporter": [
-      "text",
-      "json-summary",
-      "lcov"
-    ]
+    "reporter": ["text", "json-summary", "lcov"]
   },
   "xo": {
     "semicolon": false,
     "space": 2,
-    "plugins": [
-      "prettier",
-      "functional",
-      "unused-imports"
-    ],
-    "extends": [
-      "plugin:functional/lite"
-    ],
+    "plugins": ["prettier", "functional", "unused-imports"],
+    "extends": ["plugin:functional/lite"],
     "rules": {
       "capitalized-comments": "off",
       "unicorn/prevent-abbreviations": "off",
