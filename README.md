@@ -78,9 +78,3 @@ export default userRoute
 ## Papr Documentation
 
 Read the documentation at: [plexinc.github.io/papr](https://plexinc.github.io/papr/)
-
-## ESM Only
-
-This package only supports to be directly imported in a ESM context.
-
-For informations on how to use it in a CommonJS context, please check [this page](https://gist.github.com/ShogunPanda/fe98fd23d77cdfb918010dbc42f4504d).
