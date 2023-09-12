@@ -1,6 +1,6 @@
 {
   "name": "@inaiat/fastify-papr",
-  "version": "5.0.0",
+  "version": "6.0.0",
   "description": "Fastify Papr Plugin Integration",
   "type": "module",
   "engines": {
@@ -48,11 +48,11 @@
   "homepage": "https://github.com/inaiat/fastify-papr.git",
   "dependencies": {
     "fastify-plugin": "^4.5.1",
-    "papr": "^14.1.0"
+    "papr": "^15.0.0"
   },
   "peerDependencies": {
     "fastify": "^4",
-    "mongodb": "^5"
+    "mongodb": "^6"
   },
   "devDependencies": {
     "tsup": "^7.2.0",
