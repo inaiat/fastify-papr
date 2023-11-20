@@ -61,7 +61,7 @@
     "ava": "^5.3.1",
     "c8": "^8.0.1",
     "istanbul-badges-readme": "^1.8.5",
-    "mongodb-memory-server": "^8.15.1",
+    "mongodb-memory-server": "^9.1.1",
     "rimraf": "^5.0.1",
     "semver": "^7.5.4",
     "ts-node": "^10.9.1",
