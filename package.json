@@ -48,7 +48,7 @@
   "homepage": "https://github.com/inaiat/fastify-papr.git",
   "dependencies": {
     "fastify-plugin": "^4.5.1",
-    "papr": "^15.0.0"
+    "papr": "^15.1.0"
   },
   "peerDependencies": {
     "fastify": "^4",
@@ -70,7 +70,6 @@
     "typescript": "^5.3.3",
     "xo": "^0.57.0",
     "fastify": "^4.26.0",
-    "papr": "^15.1.0",
     "mongodb": "^6.3.0"
   },
   "files": [
