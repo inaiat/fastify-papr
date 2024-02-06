@@ -1,6 +1,5 @@
 import {fastify} from 'fastify'
-import type {TestFn} from 'ava'
-import anyTest from 'ava'
+import anyTest, {type TestFn} from 'ava'
 import {MongoMemoryServer} from 'mongodb-memory-server'
 import {MongoClient} from 'mongodb'
 

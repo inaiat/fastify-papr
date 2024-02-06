@@ -9,7 +9,7 @@
   "exports": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "test": "xo && ava",
+    "test": "FASTIFY_AUTOLOAD_TYPESCRIPT=true xo && ava",
     "build": "rimraf ./dist && mkdir dist && tsup && git rev-parse HEAD > BUILD_SHA",
     "lint": "xo --fix",
     "coverage": "xo && c8 ava",
@@ -55,21 +55,23 @@
     "mongodb": "^6"
   },
   "devDependencies": {
-    "tsup": "^7.2.0",
-    "@types/node": "^20.5.6",
-    "@types/semver": "^7.5.0",
-    "ava": "^5.3.1",
-    "c8": "^8.0.1",
-    "istanbul-badges-readme": "^1.8.5",
-    "mongodb-memory-server": "^8.15.1",
-    "rimraf": "^5.0.1",
-    "semver": "^7.5.4",
-    "ts-node": "^10.9.1",
-    "typescript": "^5.2.2",
-    "xo": "^0.56.0",
-    "eslint-plugin-unused-imports": "^3.0.0",
+    "@types/node": "^20.11.16",
+    "@types/semver": "^7.5.6",
+    "tsx": "4.7.0",
+    "ava": "^6.1.1",
+    "c8": "^9.1.0",
     "eslint-plugin-functional": "^6.0.0",
-    "eslint-plugin-prettier": "^5.0.0"
+    "eslint-plugin-unused-imports": "^3.0.0",
+    "istanbul-badges-readme": "^1.8.5",
+    "mongodb-memory-server": "^9.1.6",
+    "rimraf": "^5.0.5",
+    "semver": "^7.6.0",
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.3",
+    "xo": "^0.57.0",
+    "fastify": "^4.26.0",
+    "papr": "^15.1.0",
+    "mongodb": "^6.3.0"
   },
   "files": [
     "dist"
@@ -92,11 +94,13 @@
     ]
   },
   "ava": {
+    "workerThreads": false,
+    "timeout": "20s",
     "extensions": {
       "ts": "module"
     },
     "nodeArguments": [
-      "--loader=ts-node/esm"
+      "--import=tsx"
     ]
   },
   "c8": {

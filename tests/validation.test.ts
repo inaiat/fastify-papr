@@ -1,5 +1,4 @@
-import type {Model} from 'papr'
-import {schema, types} from 'papr'
+import {type Model, schema, types} from 'papr'
 import {MongoServerError} from 'mongodb'
 import fastifyPaprPlugin, {asModel} from '../src/index.js'
 import {SimpleDocFailedValidationError} from '../src/simple-doc-failed-validation.js'
@@ -32,7 +31,7 @@ test('document failed with name and age', async t => {
     instanceOf: MongoServerError,
   })
 
-  const simpleError = new SimpleDocFailedValidationError(error!)
+  const simpleError = new SimpleDocFailedValidationError(error)
 
   t.is(
     simpleError.schemaRulesNotSatisfied
@@ -60,7 +59,7 @@ test('simple doc failed validation should result undefined when schema rules not
     instanceOf: MongoServerError,
   })
 
-  const simpleError = new SimpleDocFailedValidationError(error!)
+  const simpleError = new SimpleDocFailedValidationError(error)
 
   t.is(simpleError.schemaRulesNotSatisfiedAsString(), undefined)
 

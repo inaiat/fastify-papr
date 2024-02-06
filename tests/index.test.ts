@@ -1,5 +1,4 @@
-import type {Model} from 'papr'
-import {schema, types} from 'papr'
+import {type Model, types, schema} from 'papr'
 import { MongoServerError } from 'mongodb'
 import fastifyPaprPlugin, { asCollection} from '../src/index.js'
 import {getConfiguredTestServer, test} from './helpers/server.js'
@@ -16,7 +15,7 @@ declare module 'fastify' {
   }
 }
 
-test('Test if index exists and works', async t => {
+test('Test if index exists and   works', async t => {
   const {server: fastify} = getConfiguredTestServer()
 
   const db = t.context.client.db()

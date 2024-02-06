@@ -25,7 +25,7 @@ export const paprHelper = (fastify: Readonly<FastifyInstance>, db: Db, disableSc
 
   return {
     async register(models: ModelRegistrationPair<PaprModels>): Promise<PaprModels> {
-      return Object.fromEntries(await Promise.all(
+      const result = Object.fromEntries(await Promise.all(
         Object.entries(models).map(async ([name, paprModel]) => {
           const model = await registerModel(paprModel.collectionName, paprModel.collectionSchema)
           fastify.log.info(`Model ${name} decorated`)
@@ -37,6 +37,8 @@ export const paprHelper = (fastify: Readonly<FastifyInstance>, db: Db, disableSc
           return [name, model] as [string, Model<BaseSchema, SchemaOptions<Partial<BaseSchema>>>]
         }),
       ))
+
+      return result as PaprModels
     },
   }
 }

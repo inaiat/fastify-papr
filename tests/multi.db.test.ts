@@ -1,9 +1,7 @@
-import type {Model} from 'papr'
-import {schema, types} from 'papr'
-import test from 'ava'
+import {type Model, schema, types} from 'papr'
 import {MongoClient} from 'mongodb'
-import fastifyPaprPlugin, {asModel} from '../src/index.js'
-import {createMongoServer, getConfiguredTestServer} from './helpers/server.js'
+import fastifyPaprPlugin, {asCollection} from '../src/index.js'
+import {createMongoServer, getConfiguredTestServer, test} from './helpers/server.js'
 
 const userSchema = schema({
   name: types.string({required: true, maxLength: 20}),
@@ -37,7 +35,7 @@ test('multiple databases', async t => {
     name: 'db1',
     db: client1.db(),
     models: {
-      user: asModel('user', userSchema),
+      user: asCollection('user', userSchema),
     },
   })
 
@@ -45,7 +43,7 @@ test('multiple databases', async t => {
     name: 'db2',
     db: client2.db(),
     models: {
-      order: asModel('order', orderSchema),
+      order: asCollection('order', orderSchema),
     },
   })
 

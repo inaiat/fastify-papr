@@ -1,7 +1,6 @@
-import type {Model} from 'papr'
-import {schema, types} from 'papr'
+import {type Model, schema, types} from 'papr'
 import {MongoServerError} from 'mongodb'
-import fastifyPaprPlugin, {asModel} from '../src/index.js'
+import fastifyPaprPlugin, {asCollection, asModel} from '../src/index.js'
 import {getConfiguredTestServer, test} from './helpers/server.js'
 
 export const userSchema = schema({
@@ -22,7 +21,7 @@ test('insert one line using papr plugin', async t => {
   await fastify.register(fastifyPaprPlugin, {
     db: t.context.client.db(),
     models: {
-      user: asModel('user', userSchema),
+      user: asCollection('user', userSchema),
     },
   })
 
@@ -38,7 +37,7 @@ test('Should papr return erro because name has more than 20 characters', async t
   await fastify.register(fastifyPaprPlugin, {
     db: t.context.client.db(),
     models: {
-      user: asModel('user', userSchema),
+      user: asCollection('user', userSchema),
     },
   })
 

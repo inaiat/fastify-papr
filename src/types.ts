@@ -16,9 +16,11 @@ export type IndexesRegistrationPair = {
   collectionIndexes: readonly IndexDescription[];
 }
 
-export type PaprModels = Record<string, Model<any, any>>
+type ColModel = Record<string, Model<any, any>>
 
-export type FastifyPaprNestedObject = Record<string, PaprModels>
+export type FastifyPaprNestedObject = Record<string, ColModel>
+
+export type PaprModels = ColModel & FastifyPaprNestedObject
 
 export type FastifyPaprOptions = {
   name?: string
@@ -29,6 +31,6 @@ export type FastifyPaprOptions = {
 
 declare module 'fastify' {
   interface FastifyInstance {
-    papr: PaprModels & FastifyPaprNestedObject;
+    papr: PaprModels;
   }
 }
