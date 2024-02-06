@@ -1,6 +1,6 @@
 import {type Model, schema, types} from 'papr'
 import {MongoServerError} from 'mongodb'
-import fastifyPaprPlugin, {asCollection, asModel} from '../src/index.js'
+import fastifyPaprPlugin, { asCollection } from '../src/index.js'
 import {getConfiguredTestServer, test} from './helpers/server.js'
 
 export const userSchema = schema({
