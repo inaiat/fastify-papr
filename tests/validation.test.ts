@@ -15,7 +15,7 @@ export const userSchema = schema({
 })
 
 declare module 'fastify' {
-  interface PaprModels {
+  interface FastifyPapr {
     user: Model<typeof userSchema[0], typeof userSchema[1]>
   }
 }

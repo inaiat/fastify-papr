@@ -30,7 +30,7 @@ const orderSchemaWithDefaults = schema({
 })
 
 declare module 'fastify' {
-  interface PaprModels {
+  interface FastifyPapr {
     user: Model<typeof userSchema[0], typeof userSchema[1]>
     order: Model<typeof orderSchema[0], typeof orderSchema[1]>
     orderDefaults: Model<typeof orderSchemaWithDefaults[0], typeof orderSchemaWithDefaults[1]>

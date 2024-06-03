@@ -3,7 +3,7 @@ import type { Db, IndexDescription } from 'mongodb'
 import type { BaseSchema, SchemaOptions } from 'papr'
 import Papr, { type Model } from 'papr'
 import type { ModelRegistrationPair } from './types.js'
-import { type PaprModels } from './types.js'
+import { type FastifyPapr } from './types.js'
 
 export const paprHelper = (fastify: Readonly<FastifyInstance>, db: Db, disableSchemaReconciliation = false) => {
   const papr = new Papr()
@@ -27,7 +27,7 @@ export const paprHelper = (fastify: Readonly<FastifyInstance>, db: Db, disableSc
     db.collection(collectionName).createIndexes(indexes as IndexDescription[])
 
   return {
-    async register(models: ModelRegistrationPair<PaprModels>): Promise<PaprModels> {
+    async register(models: ModelRegistrationPair<FastifyPapr>): Promise<FastifyPapr> {
       return Object.fromEntries(
         await Promise.all(
           Object.entries(models).map(async ([name, paprModel]) => {
