@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "noUnusedParameters": true,
+    "noUnusedLocals": true,
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "Bundler",
@@ -10,10 +12,13 @@
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
     "outDir": "dist",
-    "baseUrl": "src",
+    "paths": {
+      "src/*": [
+        "./src"
+      ]
+    },
     "skipLibCheck": true,
-    "strict": true,
-    "declaration": true
+    "strict": true
   },
   "include": [
     "src/**/*.ts"

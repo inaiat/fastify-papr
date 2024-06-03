@@ -1,5 +1,5 @@
-import type {BaseSchema, Model, SchemaOptions} from 'papr'
-import type {Db, IndexDescription} from 'mongodb'
+import type { Db, IndexDescription } from 'mongodb'
+import type { BaseSchema, Model, SchemaOptions } from 'papr'
 
 export type PaprModelItem = {
   collectionName: string
@@ -12,13 +12,17 @@ export type ModelRegistrationPair<T> = {
 }
 
 export type IndexesRegistrationPair = {
-  collectionName: string;
-  collectionIndexes: readonly IndexDescription[];
+  collectionName: string
+  collectionIndexes: readonly IndexDescription[]
 }
 
-export type PaprModels = Record<string, Model<any, any>>
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type PaprModels<T extends BaseSchema = any, U extends SchemaOptions<Partial<T>> = any> = Record<
+  string,
+  Model<T, U>
+>
 
-export type FastifyPaprNestedObject = Record<string, PaprModels>
+export type PaprDb = Record<string, PaprModels>
 
 export type FastifyPaprOptions = {
   name?: string
@@ -29,6 +33,7 @@ export type FastifyPaprOptions = {
 
 declare module 'fastify' {
   interface FastifyInstance {
-    papr: PaprModels & FastifyPaprNestedObject;
+    papr: PaprModels
+    paprDb: PaprDb
   }
 }

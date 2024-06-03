@@ -1,51 +1,65 @@
-import type {Model} from 'papr'
-import {schema, types} from 'papr'
-import {MongoServerError} from 'mongodb'
-import fastifyPaprPlugin, {asModel} from '../src/index.js'
-import {getConfiguredTestServer, test} from './helpers/server.js'
+import { deepEqual, rejects } from 'node:assert'
+import { afterEach, beforeEach, describe, it } from 'node:test'
+import type { Model } from 'papr'
+import { schema, types } from 'papr'
+import fastifyPaprPlugin, { asCollection, asModel } from '../src/index.js'
+import type { MongoContext } from './helpers/server.js'
+import { getConfiguredTestServer, setupMongoContext, tearDownMongoContext } from './helpers/server.js'
 
 export const userSchema = schema({
-  name: types.string({required: true, maxLength: 20}),
-  phone: types.string({required: true, minimum: 14}),
-  age: types.number({required: true, minimum: 18, maximum: 200}),
+  name: types.string({ required: true, maxLength: 20 }),
+  phone: types.string({ required: true, minimum: 14 }),
+  age: types.number({ required: true, minimum: 18, maximum: 200 }),
 })
 
 declare module 'fastify' {
   interface PaprModels {
-    user: Model<typeof userSchema[0], typeof userSchema[1]>;
+    user: Model<typeof userSchema[0], typeof userSchema[1]>
   }
 }
 
-test('insert one line using papr plugin', async t => {
-  const {server: fastify} = getConfiguredTestServer()
+await describe('simple tests', async () => {
+  let mut_mongoContext: MongoContext
 
-  await fastify.register(fastifyPaprPlugin, {
-    db: t.context.client.db(),
-    models: {
-      user: asModel('user', userSchema),
-    },
+  beforeEach(async () => {
+    mut_mongoContext = await setupMongoContext()
   })
 
-  const user = {name: 'Elizeu Drummond', age: 40, phone: '552124561234'}
-  const result = fastify.papr.user.insertOne(user)
-
-  t.deepEqual(await fastify.papr.user.findById((await result)._id), {_id: (await result)._id, ...user})
-})
-
-test('Should papr return erro because name has more than 20 characters', async t => {
-  const {server: fastify} = getConfiguredTestServer()
-
-  await fastify.register(fastifyPaprPlugin, {
-    db: t.context.client.db(),
-    models: {
-      user: asModel('user', userSchema),
-    },
+  afterEach(async () => {
+    tearDownMongoContext(mut_mongoContext)
   })
 
-  const user = {name: 'Elizeu Drummond Giant Name', age: 40, phone: '552124561234'}
-  const error = await t.throwsAsync(async () => fastify.papr.user.insertOne(user), {
-    instanceOf: MongoServerError,
+  await it('insert one line using papr plugin', async () => {
+    const { server: fastify } = getConfiguredTestServer()
+
+    await fastify.register(fastifyPaprPlugin, {
+      db: mut_mongoContext.db,
+      models: {
+        user: asModel('user', userSchema),
+      },
+    })
+
+    const user = { name: 'Elizeu Drummond', age: 40, phone: '552124561234' }
+    const result = await fastify.papr.user.insertOne(user)
+    const findResult = await fastify.papr.user.findById(result._id)
+    deepEqual(findResult, { _id: result._id, ...user })
   })
 
-  t.is(error?.message, 'Document failed validation')
+  await it('Should papr return erro because name has more than 20 characters', async () => {
+    const { server: fastify } = getConfiguredTestServer()
+
+    await fastify.register(fastifyPaprPlugin, {
+      db: mut_mongoContext.db,
+      models: {
+        user: asCollection('user', userSchema),
+      },
+    })
+
+    const sample = { name: 'Elizeu Drummond Giant Name', age: 40, phone: '552124561234' }
+
+    await rejects(async () => await fastify.papr.user.insertOne(sample), {
+      name: 'MongoServerError',
+      message: 'Document failed validation',
+    })
+  })
 })

@@ -1,13 +1,12 @@
-import {fastify} from 'fastify'
-import type {TestFn} from 'ava'
-import anyTest from 'ava'
-import {MongoMemoryServer} from 'mongodb-memory-server'
-import {MongoClient} from 'mongodb'
+import { fastify } from 'fastify'
+import type { Db } from 'mongodb'
+import { MongoClient } from 'mongodb'
+import { MongoMemoryServer } from 'mongodb-memory-server'
 
 export const getTestServer = () => {
-  const server = fastify({ logger: true})
+  const server = fastify({ logger: true })
 
-  server.setErrorHandler((error, request, reply) => {
+  server.setErrorHandler((error, _, reply) => {
     console.error(error)
     void reply.status(500)
     void reply.send(error)
@@ -17,33 +16,43 @@ export const getTestServer = () => {
 
 export const getRegisteredTestServer = () => {
   const server = getTestServer()
-  return {server}
+  return { server }
 }
 
 export const getConfiguredTestServer = () => {
-  const {server} = getRegisteredTestServer()
-  return {server}
-}
-
-type TestContext = {
-  mongoServer: MongoMemoryServer;
-  client: MongoClient;
+  const { server } = getRegisteredTestServer()
+  return { server }
 }
 
 export const createMongoServer = async () =>
   MongoMemoryServer.create({
     binary: {
-      version: '5.0.10',
+      version: '6.0.15',
     },
   })
 
-export const test = anyTest as TestFn<TestContext>
+export type MongoContext = {
+  mongoServer: MongoMemoryServer
+  mongoClient: MongoClient
+  db: Db
+}
 
-test.beforeEach(async t => {
-  t.context.mongoServer = await createMongoServer()
-  t.context.client = await MongoClient.connect(t.context.mongoServer.getUri())
-})
+export const setupMongoContext = async (): Promise<MongoContext> => {
+  const mongoServer = await createMongoServer()
+  const mongoClient = await MongoClient.connect(mongoServer.getUri())
+  return {
+    mongoServer,
+    mongoClient,
+    db: mongoClient.db(),
+  }
+}
 
-test.afterEach(async t => {
-  await t.context.mongoServer.stop()
-})
+// eslint-disable-next-line functional/prefer-immutable-types
+export const tearDownMongoContext = async (mut_context: MongoContext) => {
+  try {
+    await mut_context?.mongoClient.close()
+    await mut_context?.mongoServer?.stop()
+  } catch (error) {
+    console.error('Error on tearDownMongoContext', error)
+  }
+}
