@@ -5,8 +5,6 @@ import unicorn from 'eslint-plugin-unicorn'
 import tseslint from 'typescript-eslint'
 
 const customRules = {
-  'require-await': 'off',
-  '@typescript-eslint/require-await': 'error',
   '@typescript-eslint/consistent-type-exports': 'error',
   '@typescript-eslint/consistent-type-imports': 'error',
   '@typescript-eslint/no-unused-vars': 'error',
@@ -55,6 +53,7 @@ const languageOptions = {
 export default tseslint.config(
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
+  ...tseslint.configs.recommendedTypeChecked,
   n.configs['flat/recommended-module'],
   unicorn.configs['flat/recommended'],
   functional.configs['lite'],

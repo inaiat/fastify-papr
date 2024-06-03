@@ -19,7 +19,7 @@ const orderSchema = schema({
 })
 
 declare module 'fastify' {
-  interface PaprDb {
+  interface FastifyPapr {
     db1: { user: Model<typeof userSchema[0], typeof userSchema[1]> }
     db2: { order: Model<typeof orderSchema[0], typeof orderSchema[1]> }
   }
@@ -59,13 +59,13 @@ await describe('multiple databases', async () => {
     })
 
     const user = { name: 'Elizeu Drummond', age: 40, phone: '552124561234' }
-    const result = await fastify.paprDb.db1.user.insertOne(user)
+    const result = await fastify.papr.db1.user.insertOne(user)
 
-    deepEqual(await fastify.paprDb.db1.user.findById(result._id), { _id: result._id, ...user })
+    deepEqual(await fastify.papr.db1.user.findById(result._id), { _id: result._id, ...user })
 
     const order = { orderNumber: 1234, description: 'notebook', date: new Date() }
-    const orderResult = await fastify.paprDb.db2.order.insertOne(order)
+    const orderResult = await fastify.papr.db2.order.insertOne(order)
 
-    deepEqual(await fastify.paprDb.db2.order.findById(orderResult._id), { _id: orderResult._id, ...order })
+    deepEqual(await fastify.papr.db2.order.findById(orderResult._id), { _id: orderResult._id, ...order })
   })
 })

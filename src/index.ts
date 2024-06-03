@@ -3,7 +3,7 @@ import fp from 'fastify-plugin'
 import type { IndexDescription } from 'mongodb'
 import type { BaseSchema, SchemaOptions } from 'papr'
 import { paprHelper } from './papr-helper.js'
-import type { FastifyPaprOptions, PaprModelItem } from './types.js'
+import type { ColModel, FastifyPaprOptions, PaprModelItem } from './types.js'
 
 export const asCollection = <TSchema extends BaseSchema>(
   collectionName: string,
@@ -36,22 +36,33 @@ export const fastifyPaprPlugin: FastifyPluginAsync<FastifyPaprOptions> = async (
   )
 
   const models = await helper.register(options.models)
-  const { name } = options
-  if (name) {
-    if (mutable_fastify.paprDb) {
-      if (mutable_fastify.paprDb[name]) {
-        throw new Error(`Connection name already registered: ${name}`)
+  const { name: dbName } = options
+
+  if (dbName) {
+    if (mutable_fastify.papr) {
+      if (mutable_fastify.papr[dbName]) {
+        throw new Error(`Connection name already registered: ${dbName}`)
       }
-      mutable_fastify.paprDb[name] = models
+      mutable_fastify.log.info(`Registering connection name: ${dbName}`)
+      mutable_fastify.papr = {
+        ...mutable_fastify.papr,
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        [dbName]: models as unknown as ColModel<any, any>,
+      }
     } else {
-      mutable_fastify.decorate('paprDb', {
-        [name]: models,
+      mutable_fastify.decorate('papr', {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        [dbName]: models as unknown as ColModel<any, any>,
       })
     }
-  }
-
-  if (!mutable_fastify.papr) {
-    mutable_fastify.decorate('papr', models)
+  } else {
+    if (mutable_fastify.papr) {
+      const items = Object.keys(mutable_fastify.papr).join(', ')
+      throw new Error(`Models already registered: ${items}`)
+    } else {
+      mutable_fastify.decorate('papr', models)
+    }
   }
 }
 

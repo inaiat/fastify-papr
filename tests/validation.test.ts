@@ -44,7 +44,7 @@ await describe('Validation', async () => {
     const user = { name: 'Elizeu Drummond Giant Name', age: 1050, phone: '552124561234' }
     await rejects(async () => await fastify.papr.user.insertOne(user), (error) => {
       ok(error instanceof MongoServerError)
-      const simpleError = new SimpleDocFailedValidationError(error!)
+      const simpleError = new SimpleDocFailedValidationError(error)
       equal(
         // eslint-disable-next-line functional/immutable-data
         simpleError.schemaRulesNotSatisfied
@@ -74,7 +74,7 @@ await describe('Validation', async () => {
       async () => await fastify.papr.user.insertOne({ _id: result._id, ...user }),
       (error) => {
         ok(error instanceof MongoServerError)
-        const simpleError = new SimpleDocFailedValidationError(error!)
+        const simpleError = new SimpleDocFailedValidationError(error)
         equal(simpleError.schemaRulesNotSatisfiedAsString(), undefined)
         return true
       },
@@ -123,7 +123,7 @@ await describe('Validation', async () => {
     },
   }
 
-  it('basic parser', () => {
+  void it('basic parser', () => {
     const m = new MongoServerError({ code: 121, errInfo: sample1 })
     const simpleError = new SimpleDocFailedValidationError(m)
     equal(simpleError.schemaRulesNotSatisfied?.length, 1)

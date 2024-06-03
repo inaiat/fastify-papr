@@ -52,7 +52,6 @@ await describe('multiple collections', async () => {
     const { server: fastify } = getConfiguredTestServer()
 
     await fastify.register(fastifyPaprPlugin, {
-      name: 'db1',
       db: mut_mongoContext.db,
       models: {
         user: asModel('user', userSchema),
@@ -75,7 +74,6 @@ await describe('multiple collections', async () => {
     const { server: fastify } = getConfiguredTestServer()
 
     await fastify.register(fastifyPaprPlugin, {
-      name: 'db1',
       db: mut_mongoContext.db,
       models: {
         user: asModel('user', userSchema),
@@ -95,7 +93,6 @@ await describe('multiple collections', async () => {
     const { server: fastify } = getConfiguredTestServer()
 
     await fastify.register(fastifyPaprPlugin, {
-      name: 'db1',
       db: mut_mongoContext.db,
       models: {
         orderDefaults: asModel('orderDefaults', orderSchemaWithDefaults),

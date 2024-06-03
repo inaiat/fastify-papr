@@ -15,7 +15,7 @@
     "build": "rimraf ./dist && mkdir dist && tsup && git rev-parse HEAD > BUILD_SHA",
     "format": "dprint fmt",
     "lint": "dprint check && eslint",
-    "coverage": "c8 && pnpm test",
+    "coverage": "pnpm lint && c8 pnpm test",
     "prepublishOnly": "npm run build",
     "make-badges": "istanbul-badges-readme"
   },
@@ -58,16 +58,16 @@
     "mongodb": "^6.7.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.4.0",
+    "@types/node": "^20.14.0",
+    "@types/semver": "^7.5.8",
+    "c8": "^9.1.0",
     "dprint": "^0.46.1",
     "eslint": "^9.4.0",
-    "@eslint/js": "^9.4.0",
     "eslint-plugin-functional": "^6.5.1",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-n": "^17.7.0",
     "eslint-plugin-unicorn": "^53.0.0",
-    "@types/node": "^20.14.0",
-    "@types/semver": "^7.5.8",
-    "c8": "^9.1.0",
     "istanbul-badges-readme": "^1.9.0",
     "mongodb-memory-server": "^9.3.0",
     "rimraf": "^5.0.7",
@@ -76,7 +76,7 @@
     "tsup": "^8.1.0",
     "tsx": "^4.11.2",
     "typescript": "^5.4.5",
-    "typescript-eslint": "^7.11.0"
+    "typescript-eslint": "^7.12.0"
   },
   "files": [
     "dist"
