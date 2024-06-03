@@ -2,7 +2,7 @@ import { deepEqual, rejects } from 'node:assert'
 import { afterEach, beforeEach, describe, it } from 'node:test'
 import type { Model } from 'papr'
 import { schema, types } from 'papr'
-import fastifyPaprPlugin, { asCollection, asModel } from '../src/index.js'
+import fastifyPaprPlugin, { asCollection } from '../src/index.js'
 import type { MongoContext } from './helpers/server.js'
 import { getConfiguredTestServer, setupMongoContext, tearDownMongoContext } from './helpers/server.js'
 
@@ -35,7 +35,7 @@ await describe('simple tests', async () => {
     await fastify.register(fastifyPaprPlugin, {
       db: mut_mongoContext.db,
       models: {
-        user: asModel('user', userSchema),
+        user: asCollection('user', userSchema),
       },
     })
 

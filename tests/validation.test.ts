@@ -3,7 +3,7 @@ import { deepEqual, equal, ok, rejects } from 'node:assert'
 import { afterEach, beforeEach, describe, it } from 'node:test'
 import type { Model } from 'papr'
 import { schema, types } from 'papr'
-import fastifyPaprPlugin, { asModel } from '../src/index.js'
+import fastifyPaprPlugin, { asCollection } from '../src/index.js'
 import { SimpleDocFailedValidationError } from '../src/simple-doc-failed-validation.js'
 import type { MongoContext } from './helpers/server.js'
 import { getConfiguredTestServer, setupMongoContext, tearDownMongoContext } from './helpers/server.js'
@@ -37,7 +37,7 @@ await describe('Validation', async () => {
     await fastify.register(fastifyPaprPlugin, {
       db: mut_mongoContext.db,
       models: {
-        user: asModel('user', userSchema),
+        user: asCollection('user', userSchema),
       },
     })
 
@@ -63,7 +63,7 @@ await describe('Validation', async () => {
     await fastify.register(fastifyPaprPlugin, {
       db: mut_mongoContext.db,
       models: {
-        user: asModel('user', userSchema),
+        user: asCollection('user', userSchema),
       },
     })
 

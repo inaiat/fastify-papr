@@ -16,7 +16,8 @@ export type IndexesRegistrationPair = {
   collectionIndexes: readonly IndexDescription[]
 }
 
-export type ColModel<T extends BaseSchema, U extends SchemaOptions<Partial<T>>> = Model<T, U>
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type ColModel<T extends BaseSchema = any, U extends SchemaOptions<Partial<T>> = any> = Model<T, U>
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type FastifyPapr<T extends BaseSchema = any, U extends SchemaOptions<Partial<T>> = any> = Record<
@@ -36,6 +37,5 @@ export type FastifyPaprOptions = {
 declare module 'fastify' {
   interface FastifyInstance {
     papr: FastifyPapr
-    // paprDb: PaprDb
   }
 }
