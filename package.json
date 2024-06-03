@@ -17,7 +17,9 @@
     "lint": "dprint check && eslint",
     "coverage": "pnpm lint && c8 pnpm test",
     "prepublishOnly": "npm run build",
-    "make-badges": "istanbul-badges-readme"
+    "make-badges": "istanbul-badges-readme",
+    "check-commit": "pnpm lint && pnpm test",
+    "prepare": "husky || true"
   },
   "repository": {
     "type": "git",
@@ -68,6 +70,7 @@
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-n": "^17.7.0",
     "eslint-plugin-unicorn": "^53.0.0",
+    "husky": "^9.0.11",
     "istanbul-badges-readme": "^1.9.0",
     "mongodb-memory-server": "^9.3.0",
     "rimraf": "^5.0.7",
