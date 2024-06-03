@@ -5,6 +5,8 @@ import unicorn from 'eslint-plugin-unicorn'
 import tseslint from 'typescript-eslint'
 
 const customRules = {
+  'require-await': 'off',
+  '@typescript-eslint/require-await': 'error',
   '@typescript-eslint/consistent-type-exports': 'error',
   '@typescript-eslint/consistent-type-imports': 'error',
   '@typescript-eslint/no-unused-vars': 'error',

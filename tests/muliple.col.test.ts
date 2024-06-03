@@ -45,7 +45,7 @@ await describe('multiple collections', async () => {
   })
 
   afterEach(async () => {
-    tearDownMongoContext(mut_mongoContext)
+    await tearDownMongoContext(mut_mongoContext)
   })
 
   await it('multiple collections insert and retrieve', async () => {

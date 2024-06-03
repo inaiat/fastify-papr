@@ -27,7 +27,7 @@ await describe('Index', async () => {
 
   afterEach(async () => {
     console.log('Stopping mongo server and closing mongo client')
-    tearDownMongoContext(mut_mongoContext)
+    await tearDownMongoContext(mut_mongoContext)
   })
 
   await it('Test if index exists and works', async () => {

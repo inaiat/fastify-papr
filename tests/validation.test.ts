@@ -28,7 +28,7 @@ await describe('Validation', async () => {
   })
 
   afterEach(async () => {
-    tearDownMongoContext(mut_mongoContext)
+    await tearDownMongoContext(mut_mongoContext)
   })
 
   await it('document failed with name and age', async () => {
@@ -123,7 +123,7 @@ await describe('Validation', async () => {
     },
   }
 
-  await it('basic parser', async () => {
+  it('basic parser', () => {
     const m = new MongoServerError({ code: 121, errInfo: sample1 })
     const simpleError = new SimpleDocFailedValidationError(m)
     equal(simpleError.schemaRulesNotSatisfied?.length, 1)

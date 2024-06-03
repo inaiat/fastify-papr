@@ -26,7 +26,7 @@ await describe('simple tests', async () => {
   })
 
   afterEach(async () => {
-    tearDownMongoContext(mut_mongoContext)
+    await tearDownMongoContext(mut_mongoContext)
   })
 
   await it('insert one line using papr plugin', async () => {

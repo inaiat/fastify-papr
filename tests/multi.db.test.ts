@@ -35,8 +35,8 @@ await describe('multiple databases', async () => {
   })
 
   afterEach(async () => {
-    tearDownMongoContext(mut_mongoContext1)
-    tearDownMongoContext(mut_mongoContext2)
+    await tearDownMongoContext(mut_mongoContext1)
+    await tearDownMongoContext(mut_mongoContext2)
   })
 
   await it('multiple databases', async () => {
