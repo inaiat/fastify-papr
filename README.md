@@ -1,6 +1,6 @@
 # fastify-papr
 
-![Statements](https://img.shields.io/badge/statements-98.75%25-brightgreen.svg?style=flat) ![Branches](https://img.shields.io/badge/branches-85%25-yellow.svg?style=flat) ![Functions](https://img.shields.io/badge/functions-100%25-brightgreen.svg?style=flat) ![Lines](https://img.shields.io/badge/lines-98.75%25-brightgreen.svg?style=flat)
+![Statements](https://img.shields.io/badge/statements-100%25-brightgreen.svg?style=flat) ![Branches](https://img.shields.io/badge/branches-93.1%25-brightgreen.svg?style=flat) ![Functions](https://img.shields.io/badge/functions-100%25-brightgreen.svg?style=flat) ![Lines](https://img.shields.io/badge/lines-100%25-brightgreen.svg?style=flat)
 
 A fastify Papr plugin integration.
 
@@ -27,7 +27,7 @@ const userIndexes = [{ key: { name: 1 } }]
 
 declare module 'fastify' {
   interface FastifyPapr {
-    user: user: Model<typeof userSchema[0], Partial<typeof userSchema[1]>>
+    user: Model<typeof userSchema[0], Partial<typeof userSchema[1]>>
   }
 }
 
@@ -77,6 +77,8 @@ const userRoute: FastifyPluginAsync = async (fastify) => {
 export default userRoute
 ```
 
-## Papr Documentation
+## Papr Documentation and examples
 
-Read the documentation at: [plexinc.github.io/papr](https://plexinc.github.io/papr/)
+To learn more about the code and see additional examples, you can visit the Papr documentation at [plexinc.github.io/papr](https://plexinc.github.io/papr/) and explore test folder on this project.
+
+

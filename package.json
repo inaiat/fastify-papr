@@ -1,6 +1,6 @@
 {
   "name": "@inaiat/fastify-papr",
-  "version": "7.0.0",
+  "version": "7.0.1",
   "description": "Fastify Papr Plugin Integration",
   "type": "module",
   "engines": {
