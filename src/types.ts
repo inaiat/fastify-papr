@@ -1,34 +1,25 @@
-import type {BaseSchema, Model, SchemaOptions} from 'papr'
-import type {Db, IndexDescription} from 'mongodb'
+import type { Db, IndexDescription } from 'mongodb'
+import type { BaseSchema, Model, SchemaOptions } from 'papr'
 
-export type PaprModelItem = {
-  collectionName: string
-  collectionSchema: [BaseSchema, SchemaOptions<Partial<BaseSchema>>]
-  collectionIndexes?: IndexDescription[]
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type FastifyPapr<T extends BaseSchema = any, U extends SchemaOptions<Partial<T>> = any> = Record<
+  string,
+  Model<T, U> | Record<string, Model<T, U>>
+>
+
+export type ModelRegistration = {
+  name: string
+  schema: [BaseSchema, SchemaOptions<Partial<BaseSchema>>]
+  indexes?: IndexDescription[]
 }
 
 export type ModelRegistrationPair<T> = {
-  [U in keyof T]: PaprModelItem
+  [U in keyof T]: ModelRegistration
 }
-
-export type IndexesRegistrationPair = {
-  collectionName: string;
-  collectionIndexes: readonly IndexDescription[];
-}
-
-export type PaprModels = Record<string, Model<any, any>>
-
-export type FastifyPaprNestedObject = Record<string, PaprModels>
 
 export type FastifyPaprOptions = {
   name?: string
   db: Db
-  models: ModelRegistrationPair<PaprModels>
+  models: ModelRegistrationPair<FastifyPapr>
   disableSchemaReconciliation?: boolean
-}
-
-declare module 'fastify' {
-  interface FastifyInstance {
-    papr: PaprModels & FastifyPaprNestedObject;
-  }
 }

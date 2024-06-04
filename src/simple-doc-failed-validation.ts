@@ -1,37 +1,39 @@
-import {MongoServerError} from 'mongodb'
+import { MongoServerError } from 'mongodb'
 
 export type PropertyDetail = {
-  operatorName?: string;
-  specifiedAs?: Record<string, any>;
-  reason?: string;
-  consideredValue?: any;
-  consideredType?: any;
+  operatorName?: string
+  specifiedAs?: Record<string, unknown>
+  reason?: string
+  consideredValue?: unknown
+  consideredType?: unknown
 }
 
 export type PropertiesNotSatisfied = {
-  propertyName: string;
-  details: PropertyDetail[];
+  propertyName: string
+  details: PropertyDetail[]
 }
 
 export type DocumentFailedValidation = {
-  failingDocumentId?: string;
+  failingDocumentId?: string
   details?: {
-    operatorName?: string;
+    operatorName?: string
     schemaRulesNotSatisfied?: [
       {
-        operatorName: string;
-        propertiesNotSatisfied: PropertiesNotSatisfied[];
+        operatorName: string
+        propertiesNotSatisfied: PropertiesNotSatisfied[]
       },
-    ];
-  };
+    ]
+  }
 }
 
 export type SimpleDocFailedValidation = Array<Record<string, Array<Record<string, PropertyDetail[]>>>> | undefined
 
 const prettyPropertiesNotSatisfied = (propertiesNotSatisfied: readonly PropertiesNotSatisfied[]) =>
-  propertiesNotSatisfied?.map(i => ({[i.propertyName]: i.details}))
+  propertiesNotSatisfied?.map(i => ({ [i.propertyName]: i.details }))
 
-export function tryExtractSimpleDocFailedValidation(error: Readonly<MongoServerError>): SimpleDocFailedValidation | undefined {
+export function tryExtractSimpleDocFailedValidation(
+  error: Readonly<MongoServerError>,
+): SimpleDocFailedValidation | undefined {
   if (error instanceof MongoServerError && error.code === 121) {
     const schemaRulesNotSatisfied = (error?.errInfo as DocumentFailedValidation)?.details?.schemaRulesNotSatisfied
 

@@ -1,20 +1,25 @@
 {
   "name": "@inaiat/fastify-papr",
-  "version": "6.0.0",
+  "version": "7.0.0",
   "description": "Fastify Papr Plugin Integration",
   "type": "module",
   "engines": {
-    "node": ">=16"
+    "node": ">=20"
   },
+  "packageManager": "pnpm@9.1.4",
   "exports": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "test": "xo && ava",
+    "ts:loader": "FASTIFY_AUTOLOAD_TYPESCRIPT=true node --import=tsx/esm",
+    "test": "pnpm ts:loader --test tests/*.ts",
     "build": "rimraf ./dist && mkdir dist && tsup && git rev-parse HEAD > BUILD_SHA",
-    "lint": "xo --fix",
-    "coverage": "xo && c8 ava",
+    "format": "dprint fmt",
+    "lint": "dprint check && eslint",
+    "coverage": "pnpm lint && c8 pnpm test",
     "prepublishOnly": "npm run build",
-    "make-badges": "istanbul-badges-readme"
+    "make-badges": "istanbul-badges-readme",
+    "check-commit": "pnpm lint && pnpm test",
+    "prepare": "husky || true"
   },
   "repository": {
     "type": "git",
@@ -48,28 +53,33 @@
   "homepage": "https://github.com/inaiat/fastify-papr.git",
   "dependencies": {
     "fastify-plugin": "^4.5.1",
-    "papr": "^15.0.0"
+    "papr": "^15.2.2"
   },
   "peerDependencies": {
-    "fastify": "^4",
-    "mongodb": "^6"
+    "fastify": "^4.27",
+    "mongodb": "^6.7.0"
   },
   "devDependencies": {
-    "tsup": "^7.2.0",
-    "@types/node": "^20.5.6",
-    "@types/semver": "^7.5.0",
-    "ava": "^5.3.1",
-    "c8": "^8.0.1",
-    "istanbul-badges-readme": "^1.8.5",
-    "mongodb-memory-server": "^8.15.1",
-    "rimraf": "^5.0.1",
-    "semver": "^7.5.4",
-    "ts-node": "^10.9.1",
-    "typescript": "^5.2.2",
-    "xo": "^0.56.0",
-    "eslint-plugin-unused-imports": "^3.0.0",
-    "eslint-plugin-functional": "^6.0.0",
-    "eslint-plugin-prettier": "^5.0.0"
+    "@eslint/js": "^9.4.0",
+    "@types/node": "^20.14.1",
+    "@types/semver": "^7.5.8",
+    "c8": "^9.1.0",
+    "dprint": "^0.46.1",
+    "eslint": "^9.4.0",
+    "eslint-plugin-functional": "^6.5.1",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-n": "^17.7.0",
+    "eslint-plugin-unicorn": "^53.0.0",
+    "husky": "^9.0.11",
+    "istanbul-badges-readme": "^1.9.0",
+    "mongodb-memory-server": "^9.3.0",
+    "rimraf": "^5.0.7",
+    "semver": "^7.6.2",
+    "ts-node": "^10.9.2",
+    "tsup": "^8.1.0",
+    "tsx": "^4.11.2",
+    "typescript": "^5.4.5",
+    "typescript-eslint": "^7.12.0"
   },
   "files": [
     "dist"
@@ -91,82 +101,11 @@
       "src/**/*.ts"
     ]
   },
-  "ava": {
-    "extensions": {
-      "ts": "module"
-    },
-    "nodeArguments": [
-      "--loader=ts-node/esm"
-    ]
-  },
   "c8": {
     "reporter": [
       "text",
       "json-summary",
       "lcov"
-    ]
-  },
-  "xo": {
-    "semicolon": false,
-    "space": 2,
-    "plugins": [
-      "prettier",
-      "functional",
-      "unused-imports"
-    ],
-    "extends": [
-      "plugin:functional/lite"
-    ],
-    "rules": {
-      "capitalized-comments": "off",
-      "unicorn/prevent-abbreviations": "off",
-      "unicorn/no-array-callback-reference": "off",
-      "unicorn/no-array-method-this-argument": "off",
-      "new-cap": "off",
-      "import/no-extraneous-dependencies": "off",
-      "@typescript-eslint/member-delimiter-style": "off",
-      "@typescript-eslint/prefer-readonly-parameter-types": "off",
-      "@typescript-eslint/naming-convention": "off",
-      "@typescript-eslint/consistent-type-imports": "off",
-      "@typescript-eslint/consistent-type-definitions": "off",
-      "@typescript-eslint/no-unsafe-assignment": "warn",
-      "@typescript-eslint/no-empty-function": "warn",
-      "@typescript-eslint/no-unsafe-call": "off",
-      "@typescript-eslint/object-curly-spacing": "off",
-      "@typescript-eslint/no-unused-vars": "error",
-      "unused-imports/no-unused-imports": "error",
-      "functional/no-method-signature": "off",
-      "functional/prefer-readonly-type": "off",
-      "functional/no-classes": "off",
-      "functional/no-return-void": "off",
-      "functional/no-let": [
-        "error",
-        {
-          "ignoreIdentifierPattern": "^mutable_"
-        }
-      ],
-      "functional/immutable-data": [
-        "error",
-        {
-          "ignoreIdentifierPattern": "^mutable_*"
-        }
-      ]
-    },
-    "overrides": [
-      {
-        "files": "tests/**/*.ts",
-        "rules": {
-          "neverthrow/must-use-result": "off",
-          "functional/no-method-signature": "off",
-          "@typescript-eslint/prefer-readonly-parameter-types": "off",
-          "@typescript-eslint/no-unsafe-assignment": "off",
-          "functional/prefer-readonly-type": "off",
-          "functional/immutable-data": "off",
-          "ava/use-test": "off",
-          "unicorn/no-await-expression-member": "off",
-          "prefer-promise-reject-errors": "off"
-        }
-      }
     ]
   },
   "config": {
