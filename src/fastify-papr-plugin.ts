@@ -1,20 +1,27 @@
 import type { FastifyPluginAsync } from 'fastify'
 
+import fp from 'fastify-plugin'
 import type { IndexDescription } from 'mongodb'
 import type { BaseSchema, SchemaOptions } from 'papr'
 import { paprHelper } from './papr-helper.js'
-import type { ColModel, FastifyPaprOptions, PaprModelItem } from './types.js'
+import type { FastifyPapr, FastifyPaprOptions, ModelRegistration } from './types.js'
+
+declare module 'fastify' {
+  interface FastifyInstance {
+    papr: FastifyPapr
+  }
+}
 
 export const asCollection = <TSchema extends BaseSchema>(
-  collectionName: string,
+  name: string,
   // eslint-disable-next-line functional/prefer-immutable-types
-  collectionSchema: [TSchema, SchemaOptions<Partial<TSchema>>],
+  schema: [TSchema, SchemaOptions<Partial<TSchema>>],
   // eslint-disable-next-line functional/prefer-immutable-types
-  collectionIndexes?: IndexDescription[],
-): PaprModelItem => ({
-  collectionName,
-  collectionSchema,
-  collectionIndexes,
+  indexes?: IndexDescription[],
+): ModelRegistration => ({
+  name,
+  schema,
+  indexes,
 })
 
 export const fastifyPaprPlugin: FastifyPluginAsync<FastifyPaprOptions> = async (mutable_fastify, options) => {
@@ -36,11 +43,11 @@ export const fastifyPaprPlugin: FastifyPluginAsync<FastifyPaprOptions> = async (
       mutable_fastify.papr = {
         ...mutable_fastify.papr,
 
-        [dbName]: models as unknown as ColModel,
+        [dbName]: models,
       }
     } else {
       mutable_fastify.decorate('papr', {
-        [dbName]: models as unknown as ColModel,
+        [dbName]: models,
       })
     }
   } else {
@@ -52,3 +59,8 @@ export const fastifyPaprPlugin: FastifyPluginAsync<FastifyPaprOptions> = async (
     }
   }
 }
+
+export default fp(fastifyPaprPlugin, {
+  name: 'fastify-papr-plugin',
+  fastify: '4.x',
+})

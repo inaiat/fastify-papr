@@ -1,7 +1,7 @@
 import type { FastifyInstance } from 'fastify'
 import type { Db, IndexDescription } from 'mongodb'
 import type { BaseSchema, SchemaOptions } from 'papr'
-import Papr, { type Model } from 'papr'
+import Papr from 'papr'
 import type { ModelRegistrationPair } from './types.js'
 import { type FastifyPapr } from './types.js'
 
@@ -27,18 +27,18 @@ export const paprHelper = (fastify: Readonly<FastifyInstance>, db: Db, disableSc
     db.collection(collectionName).createIndexes(indexes as IndexDescription[])
 
   return {
-    async register(models: ModelRegistrationPair<FastifyPapr>): Promise<FastifyPapr> {
+    async register(models: ModelRegistrationPair<FastifyPapr>) {
       return Object.fromEntries(
         await Promise.all(
           Object.entries(models).map(async ([name, paprModel]) => {
-            const model = await registerModel(paprModel.collectionName, paprModel.collectionSchema)
+            const model = await registerModel(paprModel.name, paprModel.schema)
             fastify.log.info(`Model ${name} decorated`)
-            if (paprModel.collectionIndexes) {
-              const index = await registerIndexes(paprModel.collectionName, paprModel.collectionIndexes)
-              fastify.log.info(`Indexes for ${paprModel.collectionName} => ${index.join(', ')} created.`)
+            if (paprModel.indexes) {
+              const index = await registerIndexes(paprModel.name, paprModel.indexes)
+              fastify.log.info(`Indexes for ${paprModel.name} => ${index.join(', ')} created.`)
             }
 
-            return [name, model] as [string, Model<BaseSchema, SchemaOptions<Partial<BaseSchema>>>]
+            return [name, model] as const
           }),
         ),
       )

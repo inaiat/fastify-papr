@@ -26,8 +26,8 @@ const userSchema = schema({
 const userIndexes = [{ key: { name: 1 } }]
 
 declare module 'fastify' {
-  interface PaprModels {
-    user: Model<typeof userSchema[0], Partial<typeof userSchema[1]>>
+  interface FastifyPapr {
+    user: user: Model<typeof userSchema[0], Partial<typeof userSchema[1]>>
   }
 }
 
@@ -39,7 +39,9 @@ export default fp<FastifyPaprOptions>(
 
     await fastify.register(fastifyPaprPlugin, {
       db: fastify.mongo.client.db('test'),
-      models: { user: asCollection('user', userSchema, userIndexes) },
+      models: { 
+        user: asCollection('user', userSchema, userIndexes) 
+      },
     })
   },
   { name: 'papr' },

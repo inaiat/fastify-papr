@@ -1,6 +1,6 @@
 {
   "name": "@inaiat/fastify-papr",
-  "version": "6.0.0",
+  "version": "7.0.0",
   "description": "Fastify Papr Plugin Integration",
   "type": "module",
   "engines": {
@@ -61,7 +61,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.4.0",
-    "@types/node": "^20.14.0",
+    "@types/node": "^20.14.1",
     "@types/semver": "^7.5.8",
     "c8": "^9.1.0",
     "dprint": "^0.46.1",
