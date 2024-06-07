@@ -1,15 +1,10 @@
 import { rejects } from 'node:assert'
 import { afterEach, beforeEach, describe, it } from 'node:test'
-import { schema, types } from 'papr'
 import type { FastifyPaprOptions } from '../src/index.js'
 import fastifyPaprPlugin, { asCollection } from '../src/index.js'
+import { userSchema } from './helpers/model.js'
 import type { MongoContext } from './helpers/server.js'
 import { getConfiguredTestServer, setupMongoContext, tearDownMongoContext } from './helpers/server.js'
-
-export const userSchema = schema({
-  name: types.string({ required: true, maxLength: 20 }),
-  email: types.string({ required: true, minimum: 200 }),
-})
 
 await describe('simple tests', async () => {
   let mut_mongoContext: MongoContext
