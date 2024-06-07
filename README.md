@@ -25,7 +25,7 @@ const userSchema = schema({
 
 const userIndexes = [{ key: { name: 1 } }]
 
-declare module 'fastify' {
+declare module '@inaiat/fastify-papr' {
   interface FastifyPapr {
     user: Model<typeof userSchema[0], Partial<typeof userSchema[1]>>
   }

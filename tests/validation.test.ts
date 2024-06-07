@@ -1,24 +1,11 @@
 import { MongoServerError } from 'mongodb'
 import { deepEqual, equal, ok, rejects } from 'node:assert'
 import { afterEach, beforeEach, describe, it } from 'node:test'
-import type { Model } from 'papr'
-import { schema, types } from 'papr'
 import fastifyPaprPlugin, { asCollection } from '../src/index.js'
 import { SimpleDocFailedValidationError } from '../src/simple-doc-failed-validation.js'
+import { userSchema } from './helpers/model.js'
 import type { MongoContext } from './helpers/server.js'
 import { getConfiguredTestServer, setupMongoContext, tearDownMongoContext } from './helpers/server.js'
-
-export const userSchema = schema({
-  name: types.string({ uniqueItems: true, required: true, maxLength: 20 }),
-  phone: types.string({ required: true, minimum: 14 }),
-  age: types.number({ required: true, minimum: 18, maximum: 200 }),
-})
-
-declare module 'fastify' {
-  interface FastifyPapr {
-    user: Model<typeof userSchema[0], typeof userSchema[1]>
-  }
-}
 
 await describe('Validation', async () => {
   let mut_mongoContext: MongoContext
@@ -42,7 +29,7 @@ await describe('Validation', async () => {
     })
 
     const user = { name: 'Elizeu Drummond Giant Name', age: 1050, phone: '552124561234' }
-    await rejects(async () => await fastify.papr.user.insertOne(user), (error) => {
+    await rejects(async () => await fastify.papr.user!.insertOne(user), (error) => {
       ok(error instanceof MongoServerError)
       const simpleError = new SimpleDocFailedValidationError(error)
       equal(
@@ -68,10 +55,10 @@ await describe('Validation', async () => {
     })
 
     const user = { name: 'Elizeu Drummond', age: 40, phone: '552124561234' }
-    const result = await fastify.papr.user.insertOne(user)
+    const result = await fastify.papr.user!.insertOne(user)
 
     await rejects(
-      async () => await fastify.papr.user.insertOne({ _id: result._id, ...user }),
+      async () => await fastify.papr.user!.insertOne({ _id: result._id, ...user }),
       (error) => {
         ok(error instanceof MongoServerError)
         const simpleError = new SimpleDocFailedValidationError(error)
@@ -80,7 +67,7 @@ await describe('Validation', async () => {
       },
     )
 
-    deepEqual(await fastify.papr.user.findById(result._id), { _id: result._id, ...user })
+    deepEqual(await fastify.papr.user!.findById(result._id), { _id: result._id, ...user })
   })
 
   const sample1 = {

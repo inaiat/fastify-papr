@@ -1,22 +1,9 @@
 import { equal, rejects } from 'node:assert'
 import { afterEach, beforeEach, describe, it } from 'node:test'
-import type { Model } from 'papr'
-import { schema, types } from 'papr'
 import fastifyPaprPlugin, { asCollection } from '../src/index.js'
+import { userSchema } from './helpers/model.js'
 import type { MongoContext } from './helpers/server.js'
 import { getConfiguredTestServer, setupMongoContext, tearDownMongoContext } from './helpers/server.js'
-
-export const userSchema = schema({
-  name: types.string({ required: true, maxLength: 20 }),
-  phone: types.string({ required: true, minimum: 14 }),
-  age: types.number({ required: true, minimum: 18, maximum: 200 }),
-})
-
-declare module 'fastify' {
-  interface FastifyPapr {
-    user: Model<typeof userSchema[0], typeof userSchema[1]>
-  }
-}
 
 await describe('Index', async () => {
   let mut_mongoContext: MongoContext
@@ -42,7 +29,7 @@ await describe('Index', async () => {
       },
     })
 
-    const { user } = fastify.papr
+    const user = fastify.papr.user!
 
     await user.insertOne({ name: 'Elizeu Drummond', age: 35, phone: '552124561234' })
     await user.insertOne({ name: 'Luiz Pareto', age: 70, phone: '552124561234' })
@@ -53,7 +40,7 @@ await describe('Index', async () => {
     const e = await r.explain()
 
     equal(e.ok, 1)
-    equal((await fastify.papr.user.find({})).length, 3)
+    equal((await user.find({})).length, 3)
   })
 
   await it('Missing index should fail', async () => {
@@ -68,9 +55,11 @@ await describe('Index', async () => {
       },
     })
 
-    await fastify.papr.user.insertOne({ name: 'Elizeu Drummond', age: 35, phone: '552124561234' })
-    await fastify.papr.user.insertOne({ name: 'Luiz Pareto', age: 70, phone: '552124561234' })
-    await fastify.papr.user.insertOne({ name: 'José Augusto', age: 25, phone: '552124561234' })
+    const user = fastify.papr.user!
+
+    await user.insertOne({ name: 'Elizeu Drummond', age: 35, phone: '552124561234' })
+    await user.insertOne({ name: 'Luiz Pareto', age: 70, phone: '552124561234' })
+    await user.insertOne({ name: 'José Augusto', age: 25, phone: '552124561234' })
 
     const r = db.collection('user').find().hint({ name: -1 })
 
