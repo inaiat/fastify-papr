@@ -64,7 +64,7 @@
     "@types/node": "^20.14.2",
     "@types/semver": "^7.5.8",
     "c8": "^9.1.0",
-    "dprint": "^0.46.1",
+    "dprint": "^0.47.2",
     "eslint": "^9.4.0",
     "eslint-plugin-functional": "^6.5.1",
     "eslint-plugin-import": "^2.29.1",
