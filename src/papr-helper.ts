@@ -11,7 +11,6 @@ export const paprHelper = (fastify: Readonly<FastifyInstance>, db: Db, disableSc
 
   const registerModel = async <TSchema extends BaseSchema, TOptions extends SchemaOptions<TSchema>>(
     collectionName: string,
-    // eslint-disable-next-line functional/prefer-immutable-types
     collectionSchema: [TSchema, TOptions],
   ) => {
     const model = papr.model(collectionName, collectionSchema)

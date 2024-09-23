@@ -1,5 +1,5 @@
 import eslint from '@eslint/js'
-import functional from 'eslint-plugin-functional/flat'
+import functional from 'eslint-plugin-functional'
 import n from 'eslint-plugin-n'
 import unicorn from 'eslint-plugin-unicorn'
 import tseslint from 'typescript-eslint'
