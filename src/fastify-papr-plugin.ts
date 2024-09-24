@@ -14,9 +14,7 @@ declare module 'fastify' {
 
 export const asCollection = <TSchema extends BaseSchema>(
   name: string,
-  // eslint-disable-next-line functional/prefer-immutable-types
   schema: [TSchema, SchemaOptions<Partial<TSchema>>],
-  // eslint-disable-next-line functional/prefer-immutable-types
   indexes?: IndexDescription[],
 ): ModelRegistration => ({
   name,
@@ -62,5 +60,5 @@ export const fastifyPaprPlugin: FastifyPluginAsync<FastifyPaprOptions> = async (
 
 export default fp(fastifyPaprPlugin, {
   name: 'fastify-papr-plugin',
-  fastify: '4.x',
+  fastify: '4.x || 5.x',
 })

@@ -3,8 +3,8 @@
     "noUnusedParameters": true,
     "noUnusedLocals": true,
     "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "lib": [
       "esnext"
     ],
