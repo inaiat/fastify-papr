@@ -5,9 +5,8 @@ export type {
   PropertiesNotSatisfied,
   PropertyDetail,
   SimpleDocFailedValidation,
-  SimpleDocFailedValidationError,
 } from './simple-doc-failed-validation.js'
-export { tryExtractSimpleDocFailedValidation } from './simple-doc-failed-validation.js'
+export { SimpleDocFailedValidationError, tryExtractSimpleDocFailedValidation } from './simple-doc-failed-validation.js'
 
 export type { FastifyPapr, FastifyPaprOptions, ModelRegistration, ModelRegistrationPair } from './types.js'
 
