@@ -32,12 +32,15 @@ await describe('Validation', async () => {
     await rejects(async () => await fastify.papr.user!.insertOne(user), (error) => {
       ok(error instanceof MongoServerError)
       const simpleError = new SimpleDocFailedValidationError(error)
+
       equal(
-        // eslint-disable-next-line functional/immutable-data
         simpleError.schemaRulesNotSatisfied
           ?.shift()
-          ?.properties.find(p => Object.keys(p).shift() === 'age')
-          ?.age?.shift()?.consideredValue,
+          ?.properties
+          ?.find(p => Object.keys(p).shift() === 'age')
+          ?.age
+          ?.shift()
+          ?.consideredValue,
         1050,
       )
       return true

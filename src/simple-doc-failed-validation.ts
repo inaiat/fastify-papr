@@ -26,7 +26,7 @@ export type DocumentFailedValidation = {
   }
 }
 
-export type SimpleDocFailedValidation = Array<Record<string, Array<Record<string, PropertyDetail[]>>>> | undefined
+export type SimpleDocFailedValidation = Record<string, Record<string, PropertyDetail[]>[]>[] | undefined
 
 const prettyPropertiesNotSatisfied = (propertiesNotSatisfied: readonly PropertiesNotSatisfied[]) =>
   propertiesNotSatisfied?.map(i => ({ [i.propertyName]: i.details }))

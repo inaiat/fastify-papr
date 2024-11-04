@@ -47,7 +47,6 @@ export const setupMongoContext = async (): Promise<MongoContext> => {
   }
 }
 
-// eslint-disable-next-line functional/prefer-immutable-types
 export const tearDownMongoContext = async (mut_context: MongoContext) => {
   try {
     await mut_context?.mongoClient.close()

@@ -1,7 +1,7 @@
 import type { Db, IndexDescription } from 'mongodb'
 import type { BaseSchema, Model, SchemaOptions } from 'papr'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style, @typescript-eslint/no-explicit-any
 export interface FastifyPapr<T extends BaseSchema = any, U extends SchemaOptions<Partial<T>> = any> {
   [key: string]: Model<T, U> | Record<string, Model<T, U>> | undefined
 }
