@@ -5,10 +5,25 @@ import Papr from 'papr'
 import type { ModelRegistrationPair } from './types.js'
 import { type FastifyPapr } from './types.js'
 
+/**
+ * Creates a helper for managing Papr models
+ * Handles model registration and index creation
+ *
+ * @param fastify Fastify instance for logging
+ * @param db MongoDB database connection
+ * @param disableSchemaReconciliation Whether to skip schema validation reconciliation
+ * @returns Object with registration methods
+ */
 export const paprHelper = (fastify: Readonly<FastifyInstance>, db: Db, disableSchemaReconciliation = false) => {
   const papr = new Papr()
   papr.initialize(db)
 
+  /**
+   * Registers a model with Papr
+   * @param collectionName MongoDB collection name
+   * @param collectionSchema Schema definition and options
+   * @returns Registered Papr model
+   */
   const registerModel = async <TSchema extends BaseSchema, TOptions extends SchemaOptions<TSchema>>(
     collectionName: string,
     collectionSchema: [TSchema, TOptions],
@@ -22,10 +37,21 @@ export const paprHelper = (fastify: Readonly<FastifyInstance>, db: Db, disableSc
     return model
   }
 
+  /**
+   * Creates MongoDB indexes for a collection
+   * @param collectionName MongoDB collection name
+   * @param indexes Array of index descriptions
+   * @returns Array of created index names
+   */
   const registerIndexes = async (collectionName: string, indexes: readonly IndexDescription[]) =>
     db.collection(collectionName).createIndexes(indexes as IndexDescription[])
 
   return {
+    /**
+     * Registers multiple models at once
+     * @param models Model registration definitions
+     * @returns Object with registered models
+     */
     async register(models: ModelRegistrationPair<FastifyPapr>) {
       return Object.fromEntries(
         await Promise.all(
