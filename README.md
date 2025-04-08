@@ -77,6 +77,53 @@ const userRoute: FastifyPluginAsync = async (fastify) => {
 export default userRoute
 ```
 
+## Breaking Changes in v9.0.0
+
+### MongoDB Validation Error Handling
+
+We've consolidated and improved the MongoDB validation error handling in v2.0.0:
+
+- The `SimpleDocFailedValidationError` and related types have been replaced with a new `MongoValidationError` class
+- The error extraction logic has been improved for better type safety and reliability
+- New helper methods have been added for easier access to validation errors
+
+#### Migration Guide
+
+Replace imports:
+
+```diff
+- import { SimpleDocFailedValidationError, tryExtractSimpleDocFailedValidation } from '@inaiat/fastify-papr'
++ import { MongoValidationError, extractValidationErrors } from '@inaiat/fastify-papr'
+```
+
+Use the new class and methods:
+
+```diff
+- const simpleError = new SimpleDocFailedValidationError(error)
+- const hasErrors = simpleError.documentFailedValidation
+- const errorDetails = simpleError.schemaRulesNotSatisfied
+- const errorJson = simpleError.schemaRulesNotSatisfiedAsString()
++ const validationError = new MongoValidationError(error)
++ const hasErrors = validationError.hasValidationFailures
++ const errorDetails = validationError.validationErrors
++ const errorJson = validationError.getValidationErrorsAsString()
+```
+
+New features:
+
+```typescript
+// Get validation errors for a specific field
+const nameErrors = validationError.getFieldErrors('name')
+```
+
+Type changes:
+```diff
+- DocumentFailedValidation → DocumentValidationError
+- PropertiesNotSatisfied → ValidationProperty
+- PropertyDetail → ValidationDetail
+- SimpleDocFailedValidation → ValidationErrors
+```
+
 ## Papr Documentation and examples
 
 To learn more about the code and see additional examples, you can visit the Papr documentation at [plexinc.github.io/papr](https://plexinc.github.io/papr/) and explore test folder on this project.
