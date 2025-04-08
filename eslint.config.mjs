@@ -55,7 +55,7 @@ export default tseslint.config(
   ...tseslint.configs.recommendedTypeChecked,
   ...tseslint.configs.stylisticTypeChecked,
   n.configs['flat/recommended-module'],
-  unicorn.configs['flat/recommended'],
+  unicorn.configs.recommended,
   {
     ignores: ['*.mjs', 'dist', 'coverage/', 'report/'],
   },
