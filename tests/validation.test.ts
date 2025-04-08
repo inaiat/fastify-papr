@@ -2,7 +2,7 @@ import { MongoServerError } from 'mongodb'
 import { deepEqual, equal, ok, rejects } from 'node:assert'
 import { afterEach, beforeEach, describe, it } from 'node:test'
 import fastifyPaprPlugin, { asCollection } from '../src/index.js'
-import { SimpleDocFailedValidationError } from '../src/simple-doc-failed-validation.js'
+import { MongoValidationError } from '../src/index.js'
 import { userSchema } from './helpers/model.js'
 import type { MongoContext } from './helpers/server.js'
 import { getConfiguredTestServer, setupMongoContext, tearDownMongoContext } from './helpers/server.js'
@@ -31,10 +31,10 @@ await describe('Validation', async () => {
     const user = { name: 'Elizeu Drummond Giant Name', age: 1050, phone: '552124561234' }
     await rejects(async () => await fastify.papr.user!.insertOne(user), (error) => {
       ok(error instanceof MongoServerError)
-      const simpleError = new SimpleDocFailedValidationError(error)
+      const simpleError = new MongoValidationError(error)
 
       equal(
-        simpleError.schemaRulesNotSatisfied
+        simpleError.validationErrors
           ?.shift()
           ?.properties
           ?.find(p => Object.keys(p).shift() === 'age')
@@ -64,8 +64,8 @@ await describe('Validation', async () => {
       async () => await fastify.papr.user!.insertOne({ _id: result._id, ...user }),
       (error) => {
         ok(error instanceof MongoServerError)
-        const simpleError = new SimpleDocFailedValidationError(error)
-        equal(simpleError.schemaRulesNotSatisfiedAsString(), undefined)
+        const simpleError = new MongoValidationError(error)
+        equal(simpleError.getValidationErrorsAsString(), undefined)
         return true
       },
     )
@@ -115,7 +115,7 @@ await describe('Validation', async () => {
 
   void it('basic parser', () => {
     const m = new MongoServerError({ code: 121, errInfo: sample1 })
-    const simpleError = new SimpleDocFailedValidationError(m)
-    equal(simpleError.schemaRulesNotSatisfied?.length, 1)
+    const simpleError = new MongoValidationError(m)
+    equal(simpleError.validationErrors?.length, 1)
   })
 })
