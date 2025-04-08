@@ -53,6 +53,8 @@ How to use:
 ```ts
 import { FastifyPluginAsync } from 'fastify'
 import { Static, Type } from '@sinclair/typebox'
+import { MongoServerError } from 'mongodb'
+import { MongoValidationError, isMongoServerError } from '@inaiat/fastify-papr'
 
 const userDto = Type.Object({
   name: Type.String({ maxLength: 100, minLength: 10 }),
@@ -67,9 +69,35 @@ const userRoute: FastifyPluginAsync = async (fastify) => {
         body: userDto,
       },
     },
-    async (req) => {
-      const result = await fastify.papr.user.insertOne(req.body)
-      return result
+    async (req, reply) => {
+      try {
+        const result = await fastify.papr.user.insertOne(req.body)
+        return result
+      } catch (error) {
+        // Check if it's a MongoDB validation error
+        if (isMongoServerError(error) && error.code === 121) {
+          const validationError = new MongoValidationError(error)
+
+          // Log or process the validation details
+          console.error('Validation failed:', validationError.getValidationErrorsAsString())
+
+          // Example: Get errors for a specific field
+          const nameErrors = validationError.getFieldErrors('name')
+          if (nameErrors) {
+            console.error('Name field errors:', nameErrors)
+          }
+
+          // Return a 400 Bad Request with validation details
+          return reply.status(400).send({
+            message: 'Validation failed',
+            errors: validationError.validationErrors,
+          })
+        }
+
+        // Handle other errors
+        fastify.log.error(error)
+        return reply.status(500).send({ message: 'Internal Server Error' })
+      }
     },
   )
 }
