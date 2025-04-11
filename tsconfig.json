@@ -1,24 +1,31 @@
 {
   "compilerOptions": {
-    "noUnusedParameters": true,
-    "noUnusedLocals": true,
     "target": "ESNext",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "lib": [
       "esnext"
     ],
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "sourceMap": true,
     "outDir": "dist",
     "paths": {
       "src/*": [
         "./src"
       ]
     },
+    "verbatimModuleSyntax": true,
+    "noUnusedLocals": true, // Flags unused local variables
+    "noUnusedParameters": true, // Flags unused function parameters
+    "noFallthroughCasesInSwitch": true, // Prevents fallthroughs in switch cases
+    "noUncheckedIndexedAccess": true, // Flags potential undefined elements when accessing arrays or objects
+    "moduleDetection": "force",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "sourceMap": true,
     "skipLibCheck": true,
-    "strict": true
+    "strictNullChecks": true, // Ensures no nullable values unless explicitly typed as such
+    "strictFunctionTypes": true, // Prevents incompatible function assignments
+    "strictPropertyInitialization": true // Ensures properties are initialized in constructor,
   },
   "include": [
     "src/**/*.ts"

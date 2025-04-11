@@ -8,10 +8,21 @@ import type { FastifyPapr, FastifyPaprOptions, ModelRegistration } from './types
 
 declare module 'fastify' {
   interface FastifyInstance {
+    /**
+     * Papr models accessible through the fastify instance
+     * Models can be accessed directly or through a named database connection
+     */
     papr: FastifyPapr
   }
 }
 
+/**
+ * Helper function to create a model registration
+ * @param name Collection name
+ * @param schema Papr schema definition with options
+ * @param indexes Optional MongoDB indexes to create
+ * @returns A model registration object
+ */
 export const asCollection = <TSchema extends BaseSchema>(
   name: string,
   schema: [TSchema, SchemaOptions<Partial<TSchema>>],
@@ -22,6 +33,10 @@ export const asCollection = <TSchema extends BaseSchema>(
   indexes,
 })
 
+/**
+ * Main Fastify plugin for Papr integration
+ * Registers models to MongoDB and decorates fastify with them
+ */
 export const fastifyPaprPlugin: FastifyPluginAsync<FastifyPaprOptions> = async (mutable_fastify, options) => {
   const helper = paprHelper(
     mutable_fastify,
@@ -58,6 +73,10 @@ export const fastifyPaprPlugin: FastifyPluginAsync<FastifyPaprOptions> = async (
   }
 }
 
+/**
+ * Default export as a Fastify plugin
+ * Compatible with Fastify v4 and v5
+ */
 export default fp(fastifyPaprPlugin, {
   name: 'fastify-papr-plugin',
   fastify: '4.x || 5.x',
