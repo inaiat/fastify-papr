@@ -1,13 +1,13 @@
 # fastify-papr
 
-![Statements](https://img.shields.io/badge/statements-100%25-brightgreen.svg?style=flat) ![Branches](https://img.shields.io/badge/branches-97.87%25-brightgreen.svg?style=flat) ![Functions](https://img.shields.io/badge/functions-100%25-brightgreen.svg?style=flat) ![Lines](https://img.shields.io/badge/lines-100%25-brightgreen.svg?style=flat)
+![Statements](https://img.shields.io/badge/statements-100%25-brightgreen.svg?style=flat) ![Branches](https://img.shields.io/badge/branches-97.82%25-brightgreen.svg?style=flat) ![Functions](https://img.shields.io/badge/functions-100%25-brightgreen.svg?style=flat) ![Lines](https://img.shields.io/badge/lines-100%25-brightgreen.svg?style=flat)
 
 A fastify Papr plugin integration.
 
 ## Getting started
 
 ```bash
-yarn add @inaiat/fastify-papr @fastify/mongodb
+pnpm add @inaiat/fastify-papr @fastify/mongodb
 ```
 
 Next, set up the plugin:
