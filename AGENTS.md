@@ -14,6 +14,7 @@
 - `pnpm lint`: `dprint check` plus `oxlint` static analysis; `pnpm lint:fix` auto-fixes Oxlint findings.
 - `pnpm fmt`: Auto-format via `dprint` (TypeScript/JS/JSON/Markdown).
 - `pnpm coverage`: Lint, test, and produce `c8` coverage reports; `pnpm make-badges` refreshes README badges.
+- MongoDB driver requirement: v7+ (enforced at plugin initialization); `peerDependencies` declare the same.
 
 ## Coding Style & Naming Conventions
 - TypeScript + ESM modules; prefer type-only imports/exports where possible.
