@@ -1,4 +1,4 @@
-import mongodbPackageJson from 'mongodb/package.json' assert { type: 'json' }
+import mongodbPackageJson from 'mongodb/package.json' with { type: 'json' }
 
 const MIN_MONGODB_DRIVER_MAJOR = 7
 const detectedMongoDbVersion = typeof mongodbPackageJson.version === 'string' ? mongodbPackageJson.version : ''
