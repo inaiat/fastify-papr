@@ -3,6 +3,7 @@ import type { FastifyPluginAsync } from 'fastify'
 import fp from 'fastify-plugin'
 import type { IndexDescription } from 'mongodb'
 import type { BaseSchema, SchemaOptions } from 'papr'
+import { ensureMongoDriverVersion } from './mongo-driver-version.js'
 import { paprHelper } from './papr-helper.js'
 import type { FastifyPapr, FastifyPaprOptions, ModelRegistration } from './types.js'
 
@@ -38,6 +39,8 @@ export const asCollection = <TSchema extends BaseSchema>(
  * Registers models to MongoDB and decorates fastify with them
  */
 export const fastifyPaprPlugin: FastifyPluginAsync<FastifyPaprOptions> = async (mutable_fastify, options) => {
+  ensureMongoDriverVersion()
+
   const helper = paprHelper(
     mutable_fastify,
     options.db,

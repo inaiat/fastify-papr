@@ -1,0 +1,101 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "categories": {
+    "correctness": "error",
+    "suspicious": "error",
+    "perf": "error",
+    "restriction": "error",
+    "style": "error",
+    "pedantic": "error",
+    "nursery": "off"
+  },
+  "rules": {
+    "no-nested-ternar": "allow",
+    "switch-case-braces": "allow",
+    "explicit-module-boundary-types": "allow",
+    "no-duplicate-imports": "allow",
+    "no-array-method-this-argument": "allow",
+    "require-await": "allow",
+    "id-length": "allow",
+    "explicit-function-return-type": "allow",
+    "no-rest-spread-properties": "allow",
+    "no-optional-chaining": "allow",
+    "no-async-await": "allow",
+    "no-plusplus": "allow",
+    "no-undefined": "allow",
+    "no-magic-numbers": "allow",
+    "yoda": "allow",
+    "new-cap": "allow",
+    "sort-keys": "allow",
+    "no-ternary": "allow",
+    "init-declarations": "allow",
+    "func-names": "allow",
+    "consistent-type-definitions": "allow",
+    "sort-imports": "allow",
+    "consistent-indexed-object-style": "allow",
+    "func-style": "allow",
+    "prefer-exponentiation-operator": "allow",
+    "prefer-destructuring": "allow",
+    "no-lonely-if": "allow",
+    "no-void": "allow",
+    "unicorn/no-null": "allow",
+    "@typescript-eslint/no-import-type-side-effects": "allow",
+    "@typescript-eslint/no-non-null-assertion": "allow",
+    "consistent-type-imports": "error",
+    "unicorn/no-array-callback-reference": "allow",
+    "unicorn/filename-case": [
+      "error",
+      {
+        "case": "kebabCase"
+      }
+    ],
+    "eslint/max-lines-per-function": [
+      "error",
+      {
+        "max": 110,
+        "skipBlankLines": false,
+        "skipComments": false,
+        "IIFEs": false
+      }
+    ],
+    "eslint/max-classes-per-file": [
+      "error",
+      {
+        "max": 10
+      }
+    ]
+  },
+  "ignorePatterns": [
+    "node_modules",
+    "dist",
+    "coverage",
+    "report",
+    "**/*.d.ts"
+  ],
+  "overrides": [
+    {
+      "files": [
+        "**/tests/**",
+        "**/test/**"
+      ],
+      "rules": {
+        "max-lines": [
+          "error",
+          {
+            "max": 500,
+            "skipBlankLines": true,
+            "skipComments": true
+          }
+        ],
+        "max-lines-per-function": "off",
+        "no-magic-numbers": "off",
+        "no-undefined": "off",
+        "no-async-await": "off",
+        "no-console": "off",
+        "eslint/no-await-in-loop": "off",
+        "unicorn/no-await-expression-member": "off",
+        "unicorn/consistent-function-scoping": "off"
+      }
+    }
+  ]
+}
