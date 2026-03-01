@@ -7,6 +7,11 @@ import { getConfiguredTestServer, setupMongoContext, tearDownMongoContext } from
 
 await describe('Index', async () => {
   let mut_mongoContext: MongoContext
+  const usersToInsert = [
+    { name: 'Elizeu Drummond', age: 35, phone: '552124561234' },
+    { name: 'Luiz Pareto', age: 70, phone: '552124561234' },
+    { name: 'José Augusto', age: 25, phone: '552124561234' },
+  ] as const
 
   beforeEach(async () => {
     mut_mongoContext = await setupMongoContext()
@@ -31,9 +36,9 @@ await describe('Index', async () => {
 
     const user = fastify.papr.user!
 
-    await user.insertOne({ name: 'Elizeu Drummond', age: 35, phone: '552124561234' })
-    await user.insertOne({ name: 'Luiz Pareto', age: 70, phone: '552124561234' })
-    await user.insertOne({ name: 'José Augusto', age: 25, phone: '552124561234' })
+    for (const entry of usersToInsert) {
+      await user.insertOne(entry)
+    }
 
     const r = db.collection('user').find().hint({ age: 1 })
 
@@ -57,9 +62,9 @@ await describe('Index', async () => {
 
     const user = fastify.papr.user!
 
-    await user.insertOne({ name: 'Elizeu Drummond', age: 35, phone: '552124561234' })
-    await user.insertOne({ name: 'Luiz Pareto', age: 70, phone: '552124561234' })
-    await user.insertOne({ name: 'José Augusto', age: 25, phone: '552124561234' })
+    for (const entry of usersToInsert) {
+      await user.insertOne(entry)
+    }
 
     const r = db.collection('user').find().hint({ name: -1 })
 
