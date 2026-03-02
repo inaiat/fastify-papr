@@ -37,7 +37,7 @@ export const asCollection = <TSchema extends BaseSchema>(
 })
 
 const registerNamedModels = (mutableFastify: FastifyInstance, dbName: string, models: RegisteredModels) => {
-  if (!mutableFastify.papr) {
+  if (!mutableFastify.hasDecorator('papr')) {
     mutableFastify.decorate('papr', {
       [dbName]: models,
     })
@@ -56,7 +56,7 @@ const registerNamedModels = (mutableFastify: FastifyInstance, dbName: string, mo
 }
 
 const registerDefaultModels = (mutableFastify: FastifyInstance, models: RegisteredModels) => {
-  if (mutableFastify.papr) {
+  if (mutableFastify.hasDecorator('papr')) {
     const items = Object.keys(mutableFastify.papr).join(', ')
     throw new Error(`Models already registered: ${items}`)
   }
@@ -80,7 +80,7 @@ export const fastifyPaprPlugin: FastifyPluginAsync<FastifyPaprOptions> = async (
   const models = await helper.register(options.models)
   const { name: dbName } = options
 
-  if (dbName) {
+  if (dbName !== undefined && dbName !== '') {
     registerNamedModels(mutable_fastify, dbName, models)
     return
   }

@@ -1,7 +1,7 @@
 import { deepEqual, rejects } from 'node:assert'
 import { afterEach, beforeEach, describe, it } from 'node:test'
 import fastifyPaprPlugin, { asCollection } from '../src/index.js'
-import { userSchema } from './helpers/model.js'
+import { hasUserModel, userSchema } from './helpers/model.js'
 import type { MongoContext } from './helpers/server.js'
 import { getConfiguredTestServer, setupMongoContext, tearDownMongoContext } from './helpers/server.js'
 
@@ -25,10 +25,14 @@ await describe('simple tests', async () => {
         user: asCollection('user', userSchema),
       },
     })
+    const papr = fastify.papr
+    if (!hasUserModel(papr)) {
+      throw new Error('User model not registered')
+    }
 
     const user = { name: 'Elizeu Drummond', age: 40, phone: '552124561234' }
-    const result = await fastify.papr.user!.insertOne(user)
-    const findResult = await fastify.papr.user!.findById(result._id)
+    const result = await papr.user.insertOne(user)
+    const findResult = await papr.user.findById(result._id)
     deepEqual(findResult, { _id: result._id, ...user })
   })
 
@@ -41,10 +45,14 @@ await describe('simple tests', async () => {
         user: asCollection('user', userSchema),
       },
     })
+    const papr = fastify.papr
+    if (!hasUserModel(papr)) {
+      throw new Error('User model not registered')
+    }
 
     const sample = { name: 'Elizeu Drummond Giant Name', age: 40, phone: '552124561234' }
 
-    await rejects(async () => await fastify.papr.user!.insertOne(sample), {
+    await rejects(async () => papr.user.insertOne(sample), {
       name: 'MongoServerError',
       message: 'Document failed validation',
     })

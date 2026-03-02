@@ -25,9 +25,9 @@ export const getConfiguredTestServer = () => {
 }
 
 export const createMongoServer = async () =>
-  await MongoMemoryServer.create({
+  MongoMemoryServer.create({
     binary: {
-      version: '7.0.24',
+      version: '8.2.5',
     },
   })
 

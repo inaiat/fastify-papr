@@ -1,9 +1,26 @@
 import { equal, rejects } from 'node:assert'
 import { afterEach, beforeEach, describe, it } from 'node:test'
 import fastifyPaprPlugin, { asCollection } from '../src/index.js'
-import { userSchema } from './helpers/model.js'
+import { hasUserModel, userSchema } from './helpers/model.js'
 import type { MongoContext } from './helpers/server.js'
 import { getConfiguredTestServer, setupMongoContext, tearDownMongoContext } from './helpers/server.js'
+
+const getUserModel = (papr: Parameters<typeof hasUserModel>[0]) => {
+  if (!hasUserModel(papr)) {
+    throw new Error('User model not registered')
+  }
+
+  return papr.user
+}
+
+const seedUsers = async (
+  user: ReturnType<typeof getUserModel>,
+  users: readonly { age: number; name: string; phone: string }[],
+) => {
+  for (const entry of users) {
+    await user.insertOne(entry)
+  }
+}
 
 await describe('Index', async () => {
   let mut_mongoContext: MongoContext
@@ -33,12 +50,8 @@ await describe('Index', async () => {
         user: asCollection('user', userSchema, [{ key: { name: -1 } }, { key: { age: 1 } }]),
       },
     })
-
-    const user = fastify.papr.user!
-
-    for (const entry of usersToInsert) {
-      await user.insertOne(entry)
-    }
+    const user = getUserModel(fastify.papr)
+    await seedUsers(user, usersToInsert)
 
     const r = db.collection('user').find().hint({ age: 1 })
 
@@ -59,16 +72,12 @@ await describe('Index', async () => {
         user: asCollection('user', userSchema),
       },
     })
-
-    const user = fastify.papr.user!
-
-    for (const entry of usersToInsert) {
-      await user.insertOne(entry)
-    }
+    const user = getUserModel(fastify.papr)
+    await seedUsers(user, usersToInsert)
 
     const r = db.collection('user').find().hint({ name: -1 })
 
-    await rejects(async () => await r.explain(), {
+    await rejects(async () => r.explain(), {
       name: 'MongoServerError',
       code: 2,
     })

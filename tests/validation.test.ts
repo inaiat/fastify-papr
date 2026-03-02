@@ -7,7 +7,7 @@ import fastifyPaprPlugin, {
   isMongoServerError,
   MongoValidationError,
 } from '../src/index.js'
-import { userSchema } from './helpers/model.js'
+import { hasUserModel, userSchema } from './helpers/model.js'
 import type { MongoContext } from './helpers/server.js'
 import { getConfiguredTestServer, setupMongoContext, tearDownMongoContext } from './helpers/server.js'
 
@@ -167,9 +167,13 @@ await describe('Validation', async () => {
         user: asCollection('user', userSchema),
       },
     })
+    const papr = fastify.papr
+    if (!hasUserModel(papr)) {
+      throw new Error('User model not registered')
+    }
 
     const user = { name: 'Elizeu Drummond Giant Name', age: 1050, phone: '552124561234' }
-    await rejects(async () => await fastify.papr.user!.insertOne(user), assertDocumentFailedWithNameAndAge)
+    await rejects(async () => papr.user.insertOne(user), assertDocumentFailedWithNameAndAge)
   })
 
   await it('simple doc failed validation should result undefined when schema rules not satisfied', async () => {
@@ -181,12 +185,16 @@ await describe('Validation', async () => {
         user: asCollection('user', userSchema),
       },
     })
+    const papr = fastify.papr
+    if (!hasUserModel(papr)) {
+      throw new Error('User model not registered')
+    }
 
     const user = { name: 'Elizeu Drummond', age: 40, phone: '552124561234' }
-    const result = await fastify.papr.user!.insertOne(user)
+    const result = await papr.user.insertOne(user)
 
     await rejects(
-      async () => await fastify.papr.user!.insertOne({ _id: result._id, ...user }),
+      async () => papr.user.insertOne({ _id: result._id, ...user }),
       (error) => {
         const validationError = getValidationError(error)
         equal(validationError.hasValidationFailures, false)
@@ -197,23 +205,24 @@ await describe('Validation', async () => {
       },
     )
 
-    deepEqual(await fastify.papr.user!.findById(result._id), { _id: result._id, ...user })
+    deepEqual(await papr.user.findById(result._id), { _id: result._id, ...user })
   })
 
   void it('basic parser', () => {
     const m = new MongoServerError({ code: 121, errInfo: sample1 })
     const validationError = new MongoValidationError(m)
+    const validationErrorsAsString = validationError.getValidationErrorsAsString()
     equal(validationError.validationErrors?.length, 1)
     ok(validationError.hasValidationFailures)
-    ok(validationError.getValidationErrorsAsString()?.includes('maxLength'))
+    ok(validationErrorsAsString !== undefined)
+    ok(validationErrorsAsString.includes('maxLength'))
   })
 
   void it('isMongoServerError type guard', () => {
     const validationError = new MongoServerError({ code: 121, errInfo: sample1 })
     const duplicateKeyError = new MongoServerError({ code: 11_000 })
     const genericError = new Error('Generic error')
-    const errorWithCode = new Error('Error with code') as Error & { code: number }
-    errorWithCode.code = 500
+    const errorWithCode = Object.assign(new Error('Error with code'), { code: 500 })
     const notAnError = { message: 'Not an error', code: 123 }
 
     ok(isMongoServerError(validationError))
