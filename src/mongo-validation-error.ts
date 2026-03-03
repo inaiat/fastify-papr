@@ -42,7 +42,7 @@ export type DocumentValidationError = {
         /** The specific rule operator that failed */
         operatorName: string
         /** Properties that didn't satisfy the validation rules */
-        propertiesNotSatisfied: ValidationProperty[]
+        propertiesNotSatisfied?: readonly ValidationProperty[] | null
       },
     ]
   }
@@ -64,8 +64,7 @@ export function isMongoServerError(error: unknown): error is MongoServerError {
     return true
   }
 
-  const errorWithCode = error as { code?: number }
-  return error instanceof Error && typeof errorWithCode.code === 'number'
+  return error instanceof Error && 'code' in error && typeof error.code === 'number'
 }
 
 /**
@@ -75,7 +74,7 @@ export function isMongoServerError(error: unknown): error is MongoServerError {
  * @internal
  */
 const formatValidationProperties = (properties: readonly ValidationProperty[]) =>
-  properties?.map(prop => ({ [prop.propertyName]: prop.details }))
+  properties.map(prop => ({ [prop.propertyName]: prop.details }))
 
 /**
  * Attempts to extract validation error details from a MongoDB server error
@@ -100,7 +99,7 @@ export function extractValidationErrors(
 
   // Transform the schema rules into a more user-friendly format
   const result: ValidationErrors = schemaRulesNotSatisfied.map(rule => ({
-    [rule.operatorName]: formatValidationProperties(rule.propertiesNotSatisfied || []),
+    [rule.operatorName]: formatValidationProperties(rule.propertiesNotSatisfied ?? []),
   }))
 
   return result.length > 0 ? result : undefined
@@ -141,16 +140,16 @@ export class MongoValidationError extends Error {
    * @returns Array of validation details for the field or undefined if none found
    */
   getFieldErrors(fieldName: string): ValidationDetail[] | undefined {
-    if (!this.hasValidationFailures || !this.validationErrors?.length) {
+    const validationErrors = this.validationErrors
+    if (!this.hasValidationFailures || validationErrors === undefined || validationErrors.length === 0) {
       return undefined
     }
 
-    for (const ruleSet of this.validationErrors) {
+    for (const ruleSet of validationErrors) {
       for (const [, properties] of Object.entries(ruleSet)) {
         for (const property of properties) {
-          const field = Object.keys(property).find(key => key === fieldName)
-          if (field) {
-            return property[field]
+          if (fieldName in property) {
+            return property[fieldName]
           }
         }
       }

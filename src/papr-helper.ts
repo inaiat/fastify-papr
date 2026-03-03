@@ -44,7 +44,7 @@ export const paprHelper = (fastify: Readonly<FastifyInstance>, db: Db, disableSc
    * @returns Array of created index names
    */
   const registerIndexes = async (collectionName: string, indexes: readonly IndexDescription[]) =>
-    db.collection(collectionName).createIndexes(indexes as IndexDescription[])
+    db.collection(collectionName).createIndexes([...indexes])
 
   return {
     /**

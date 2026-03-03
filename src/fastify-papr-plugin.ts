@@ -1,4 +1,4 @@
-import type { FastifyPluginAsync } from 'fastify'
+import type { FastifyInstance, FastifyPluginAsync } from 'fastify'
 
 import fp from 'fastify-plugin'
 import type { IndexDescription } from 'mongodb'
@@ -6,6 +6,8 @@ import type { BaseSchema, SchemaOptions } from 'papr'
 import { ensureMongoDriverVersion } from './mongo-driver-version.js'
 import { paprHelper } from './papr-helper.js'
 import type { FastifyPapr, FastifyPaprOptions, ModelRegistration } from './types.js'
+
+type RegisteredModels = Awaited<ReturnType<ReturnType<typeof paprHelper>['register']>>
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -34,6 +36,34 @@ export const asCollection = <TSchema extends BaseSchema>(
   indexes,
 })
 
+const registerNamedModels = (mutableFastify: FastifyInstance, dbName: string, models: RegisteredModels) => {
+  if (!mutableFastify.hasDecorator('papr')) {
+    mutableFastify.decorate('papr', {
+      [dbName]: models,
+    })
+    return
+  }
+
+  if (mutableFastify.papr[dbName]) {
+    throw new Error(`Connection name already registered: ${dbName}`)
+  }
+
+  mutableFastify.log.info(`Registering connection name: ${dbName}`)
+  mutableFastify.papr = {
+    ...mutableFastify.papr,
+    [dbName]: models,
+  }
+}
+
+const registerDefaultModels = (mutableFastify: FastifyInstance, models: RegisteredModels) => {
+  if (mutableFastify.hasDecorator('papr')) {
+    const items = Object.keys(mutableFastify.papr).join(', ')
+    throw new Error(`Models already registered: ${items}`)
+  }
+
+  mutableFastify.decorate('papr', models)
+}
+
 /**
  * Main Fastify plugin for Papr integration
  * Registers models to MongoDB and decorates fastify with them
@@ -50,30 +80,12 @@ export const fastifyPaprPlugin: FastifyPluginAsync<FastifyPaprOptions> = async (
   const models = await helper.register(options.models)
   const { name: dbName } = options
 
-  if (dbName) {
-    if (mutable_fastify.papr) {
-      if (mutable_fastify.papr[dbName]) {
-        throw new Error(`Connection name already registered: ${dbName}`)
-      }
-      mutable_fastify.log.info(`Registering connection name: ${dbName}`)
-      mutable_fastify.papr = {
-        ...mutable_fastify.papr,
-
-        [dbName]: models,
-      }
-    } else {
-      mutable_fastify.decorate('papr', {
-        [dbName]: models,
-      })
-    }
-  } else {
-    if (mutable_fastify.papr) {
-      const items = Object.keys(mutable_fastify.papr).join(', ')
-      throw new Error(`Models already registered: ${items}`)
-    } else {
-      mutable_fastify.decorate('papr', models)
-    }
+  if (dbName !== undefined && dbName !== '') {
+    registerNamedModels(mutable_fastify, dbName, models)
+    return
   }
+
+  registerDefaultModels(mutable_fastify, models)
 }
 
 /**

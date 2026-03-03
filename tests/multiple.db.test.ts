@@ -1,9 +1,18 @@
 import { deepEqual } from 'node:assert'
 import { afterEach, beforeEach, describe, it } from 'node:test'
 import fastifyPaprPlugin, { asCollection } from '../src/index.js'
-import { orderSchema, userSchema } from './helpers/model.js'
+import type { FastifyPapr } from '../src/index.js'
+import { hasDb1Models, hasDb2Models, orderSchema, userSchema } from './helpers/model.js'
 import type { MongoContext } from './helpers/server.js'
 import { getConfiguredTestServer, setupMongoContext, tearDownMongoContext } from './helpers/server.js'
+
+const getRegisteredDbModels = (papr: FastifyPapr) => {
+  if (!hasDb1Models(papr) || !hasDb2Models(papr)) {
+    throw new Error('Required database models not registered')
+  }
+
+  return papr
+}
 
 await describe('multiple databases', async () => {
   let mut_mongoContext1: MongoContext
@@ -37,15 +46,16 @@ await describe('multiple databases', async () => {
         order: asCollection('order', orderSchema),
       },
     })
+    const papr = getRegisteredDbModels(fastify.papr)
 
     const user = { name: 'Elizeu Drummond', age: 40, phone: '552124561234' }
-    const result = await fastify.papr.db1!.user.insertOne(user)
+    const result = await papr.db1.user.insertOne(user)
 
-    deepEqual(await fastify.papr.db1!.user.findById(result._id), { _id: result._id, ...user })
+    deepEqual(await papr.db1.user.findById(result._id), { _id: result._id, ...user })
 
     const order = { orderNumber: 1234, description: 'notebook', date: new Date() }
-    const orderResult = await fastify.papr.db2!.order.insertOne(order)
+    const orderResult = await papr.db2.order.insertOne(order)
 
-    deepEqual(await fastify.papr.db2!.order.findById(orderResult._id), { _id: orderResult._id, ...order })
+    deepEqual(await papr.db2.order.findById(orderResult._id), { _id: orderResult._id, ...order })
   })
 })

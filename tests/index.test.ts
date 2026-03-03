@@ -1,12 +1,34 @@
 import { equal, rejects } from 'node:assert'
 import { afterEach, beforeEach, describe, it } from 'node:test'
 import fastifyPaprPlugin, { asCollection } from '../src/index.js'
-import { userSchema } from './helpers/model.js'
+import { hasUserModel, userSchema } from './helpers/model.js'
 import type { MongoContext } from './helpers/server.js'
 import { getConfiguredTestServer, setupMongoContext, tearDownMongoContext } from './helpers/server.js'
 
+const getUserModel = (papr: Parameters<typeof hasUserModel>[0]) => {
+  if (!hasUserModel(papr)) {
+    throw new Error('User model not registered')
+  }
+
+  return papr.user
+}
+
+const seedUsers = async (
+  user: ReturnType<typeof getUserModel>,
+  users: readonly { age: number; name: string; phone: string }[],
+) => {
+  for (const entry of users) {
+    await user.insertOne(entry)
+  }
+}
+
 await describe('Index', async () => {
   let mut_mongoContext: MongoContext
+  const usersToInsert = [
+    { name: 'Elizeu Drummond', age: 35, phone: '552124561234' },
+    { name: 'Luiz Pareto', age: 70, phone: '552124561234' },
+    { name: 'José Augusto', age: 25, phone: '552124561234' },
+  ] as const
 
   beforeEach(async () => {
     mut_mongoContext = await setupMongoContext()
@@ -28,12 +50,8 @@ await describe('Index', async () => {
         user: asCollection('user', userSchema, [{ key: { name: -1 } }, { key: { age: 1 } }]),
       },
     })
-
-    const user = fastify.papr.user!
-
-    await user.insertOne({ name: 'Elizeu Drummond', age: 35, phone: '552124561234' })
-    await user.insertOne({ name: 'Luiz Pareto', age: 70, phone: '552124561234' })
-    await user.insertOne({ name: 'José Augusto', age: 25, phone: '552124561234' })
+    const user = getUserModel(fastify.papr)
+    await seedUsers(user, usersToInsert)
 
     const r = db.collection('user').find().hint({ age: 1 })
 
@@ -54,16 +72,12 @@ await describe('Index', async () => {
         user: asCollection('user', userSchema),
       },
     })
-
-    const user = fastify.papr.user!
-
-    await user.insertOne({ name: 'Elizeu Drummond', age: 35, phone: '552124561234' })
-    await user.insertOne({ name: 'Luiz Pareto', age: 70, phone: '552124561234' })
-    await user.insertOne({ name: 'José Augusto', age: 25, phone: '552124561234' })
+    const user = getUserModel(fastify.papr)
+    await seedUsers(user, usersToInsert)
 
     const r = db.collection('user').find().hint({ name: -1 })
 
-    await rejects(async () => await r.explain(), {
+    await rejects(async () => r.explain(), {
       name: 'MongoServerError',
       code: 2,
     })

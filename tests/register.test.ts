@@ -30,7 +30,9 @@ await describe('simple tests', async () => {
 
     await fastify.register(fastifyPaprPlugin, opts)
 
-    await rejects(async () => await fastify.register(fastifyPaprPlugin, opts), {
+    await rejects(async () => {
+      await fastify.register(fastifyPaprPlugin, opts)
+    }, {
       name: 'Error',
       message: 'Models already registered: foo, bar',
     })
@@ -50,7 +52,9 @@ await describe('simple tests', async () => {
 
     await fastify.register(fastifyPaprPlugin, opts)
 
-    await rejects(async () => await fastify.register(fastifyPaprPlugin, opts), {
+    await rejects(async () => {
+      await fastify.register(fastifyPaprPlugin, opts)
+    }, {
       name: 'Error',
       message: 'Connection name already registered: db1',
     })
