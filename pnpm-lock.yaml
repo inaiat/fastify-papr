@@ -25,10 +25,10 @@ importers:
         specifier: ^7.7.1
         version: 7.7.1
       c8:
-        specifier: ^11
+        specifier: ^11.0.0
         version: 11.0.0
       dprint:
-        specifier: ^0.52
+        specifier: ^0.52.0
         version: 0.52.0
       husky:
         specifier: ^9.1.7
@@ -43,7 +43,7 @@ importers:
         specifier: ^11.0.1
         version: 11.0.1
       oxlint:
-        specifier: ^1.51
+        specifier: ^1.51.0
         version: 1.51.0(oxlint-tsgolint@0.15.0)
       oxlint-tsgolint:
         specifier: ^0.15.0
@@ -707,8 +707,8 @@ packages:
       bare-buffer:
         optional: true
 
-  bare-os@3.7.0:
-    resolution: {integrity: sha512-64Rcwj8qlnTZU8Ps6JJEdSmxBEUGgI7g8l+lMtsJLl4IsfTcHMTfJ188u2iGV6P6YPRZrtv72B2kjn+hp+Yv3g==}
+  bare-os@3.7.1:
+    resolution: {integrity: sha512-ebvMaS5BgZKmJlvuWh14dg9rbUI84QeV3WlWn6Ph6lFI8jJoh7ADtVTyD2c93euwbe+zgi0DVrl4YmqXeM9aIA==}
     engines: {bare: '>=1.14.0'}
 
   bare-path@3.0.0:
@@ -1808,11 +1808,11 @@ snapshots:
       - bare-abort-controller
       - react-native-b4a
 
-  bare-os@3.7.0: {}
+  bare-os@3.7.1: {}
 
   bare-path@3.0.0:
     dependencies:
-      bare-os: 3.7.0
+      bare-os: 3.7.1
 
   bare-stream@2.8.0(bare-events@2.8.2):
     dependencies:
