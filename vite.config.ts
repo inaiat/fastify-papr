@@ -119,7 +119,7 @@ export default defineConfig({
     outDir: 'dist',
     platform: 'node',
     sourcemap: true,
-    target: 'node24',
+    target: 'node22.12',
   },
   test: {
     coverage: {
