@@ -3,7 +3,6 @@ import type { Db, IndexDescription } from 'mongodb'
 import type { BaseSchema, SchemaOptions } from 'papr'
 import Papr from 'papr'
 import type { ModelRegistrationPair } from './types.js'
-import { type FastifyPapr } from './types.js'
 
 /**
  * Creates a helper for managing Papr models
@@ -52,7 +51,7 @@ export const paprHelper = (fastify: Readonly<FastifyInstance>, db: Db, disableSc
      * @param models Model registration definitions
      * @returns Object with registered models
      */
-    async register(models: ModelRegistrationPair<FastifyPapr>) {
+    async register(models: ModelRegistrationPair) {
       return Object.fromEntries(
         await Promise.all(
           Object.entries(models).map(async ([name, paprModel]) => {

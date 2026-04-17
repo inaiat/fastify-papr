@@ -12,9 +12,7 @@ export const ensureMongoDriverVersion = (version = detectedMongoDbVersion) => {
 
   if (!Number.isFinite(major) || major < MIN_MONGODB_DRIVER_MAJOR) {
     const detected = formatDetectedVersion(version)
-    throw new Error(
-      `@inaiat/fastify-papr requires mongodb driver >=${MIN_MONGODB_DRIVER_MAJOR}. Detected ${detected}.`,
-    )
+    throw new Error(`@inaiat/fastify-papr requires mongodb driver >=${MIN_MONGODB_DRIVER_MAJOR}. Detected ${detected}.`)
   }
 }
 

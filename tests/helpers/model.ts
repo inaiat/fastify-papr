@@ -1,6 +1,5 @@
-import type { Model } from 'papr'
 import { schema, types } from 'papr'
-import type { FastifyPapr } from '../../src/index.js'
+import type { FastifyPapr, PaprModel } from '../../src/index.js'
 
 export const userSchema = schema({
   name: types.string({ required: true, maxLength: 20 }),
@@ -14,19 +13,22 @@ export const orderSchema = schema({
   date: types.date({ required: true }),
 })
 
-export const orderSchemaWithDefaults = schema({
-  orderNumber: types.number({ required: true }),
-  description: types.string({ minLength: 5, required: true }),
-  date: types.date({ required: true }),
-}, {
-  defaults: {
-    orderNumber: 1,
+export const orderSchemaWithDefaults = schema(
+  {
+    orderNumber: types.number({ required: true }),
+    description: types.string({ minLength: 5, required: true }),
+    date: types.date({ required: true }),
   },
-})
+  {
+    defaults: {
+      orderNumber: 1,
+    },
+  },
+)
 
-type UserModel = Model<typeof userSchema[0], typeof userSchema[1]>
-type OrderModel = Model<typeof orderSchema[0], typeof orderSchema[1]>
-type OrderDefaultsModel = Model<typeof orderSchemaWithDefaults[0], typeof orderSchemaWithDefaults[1]>
+export type UserModel = PaprModel<typeof userSchema>
+type OrderModel = PaprModel<typeof orderSchema>
+type OrderDefaultsModel = PaprModel<typeof orderSchemaWithDefaults>
 type Db1Models = { user: UserModel }
 type Db2Models = { order: OrderModel }
 
