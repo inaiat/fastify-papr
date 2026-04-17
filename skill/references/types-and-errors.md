@@ -54,9 +54,9 @@ Best practices:
 
 When changing the public type surface, update:
 
-- `/Users/inaiat.moraes/dev/flash/fastify-papr/tests/types.test.ts`
-- `/Users/inaiat.moraes/dev/flash/fastify-papr/tests/type-augmentation.test.ts`
-- `/Users/inaiat.moraes/dev/flash/fastify-papr/tests/mongo-validation-error.types.test.ts`
+- `tests/types.test.ts`
+- `tests/type-augmentation.test.ts`
+- `tests/mongo-validation-error.types.test.ts`
 
 Use `expectTypeOf` for compile-time contracts. Prefer tests that prove the public package contract rather than local implementation details.
 
