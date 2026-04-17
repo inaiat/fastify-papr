@@ -74,16 +74,14 @@ export function isMongoServerError(error: unknown): error is MongoServerError {
  * @internal
  */
 const formatValidationProperties = (properties: readonly ValidationProperty[]) =>
-  properties.map(prop => ({ [prop.propertyName]: prop.details }))
+  properties.map((prop) => ({ [prop.propertyName]: prop.details }))
 
 /**
  * Attempts to extract validation error details from a MongoDB server error
  * @param error The MongoDB server error to process
  * @returns A simplified representation of validation errors or undefined if not a validation error
  */
-export function extractValidationErrors(
-  error: Readonly<MongoServerError>,
-): ValidationErrors | undefined {
+export function extractValidationErrors(error: Readonly<MongoServerError>): ValidationErrors | undefined {
   // Check if this is actually a MongoDB validation error
   if (!isMongoServerError(error) || error.code !== 121) {
     return undefined
@@ -98,7 +96,7 @@ export function extractValidationErrors(
   const schemaRulesNotSatisfied = errInfo.details.schemaRulesNotSatisfied
 
   // Transform the schema rules into a more user-friendly format
-  const result: ValidationErrors = schemaRulesNotSatisfied.map(rule => ({
+  const result: ValidationErrors = schemaRulesNotSatisfied.map((rule) => ({
     [rule.operatorName]: formatValidationProperties(rule.propertiesNotSatisfied ?? []),
   }))
 

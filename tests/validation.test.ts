@@ -1,6 +1,6 @@
 import { MongoServerError } from 'mongodb'
 import { deepEqual, equal, ok, rejects } from 'node:assert'
-import { afterEach, beforeEach, describe, it } from 'node:test'
+import { afterEach, beforeEach, describe, it } from 'vite-plus/test'
 import fastifyPaprPlugin, {
   asCollection,
   extractValidationErrors,
@@ -41,10 +41,7 @@ const assertDocumentFailedWithNameAndAge = (error: unknown) => {
 
   // Use index access instead of shift() to avoid mutation.
   equal(
-    validationError.validationErrors?.[0]
-      ?.properties
-      ?.find(p => Object.keys(p)[0] === 'age')
-      ?.age?.[0]
+    validationError.validationErrors?.[0]?.properties?.find((p) => Object.keys(p)[0] === 'age')?.age?.[0]
       ?.consideredValue,
     1050,
   )
@@ -147,7 +144,7 @@ const sample1 = {
   },
 }
 
-await describe('Validation', async () => {
+describe('Validation', () => {
   let mut_mongoContext: MongoContext
 
   beforeEach(async () => {
@@ -158,7 +155,7 @@ await describe('Validation', async () => {
     await tearDownMongoContext(mut_mongoContext)
   })
 
-  await it('document failed with name and age', async () => {
+  it('document failed with name and age', async () => {
     const { server: fastify } = getConfiguredTestServer()
 
     await fastify.register(fastifyPaprPlugin, {
@@ -176,7 +173,7 @@ await describe('Validation', async () => {
     await rejects(async () => papr.user.insertOne(user), assertDocumentFailedWithNameAndAge)
   })
 
-  await it('simple doc failed validation should result undefined when schema rules not satisfied', async () => {
+  it('simple doc failed validation should result undefined when schema rules not satisfied', async () => {
     const { server: fastify } = getConfiguredTestServer()
 
     await fastify.register(fastifyPaprPlugin, {
@@ -208,7 +205,7 @@ await describe('Validation', async () => {
     deepEqual(await papr.user.findById(result._id), { _id: result._id, ...user })
   })
 
-  void it('basic parser', () => {
+  it('basic parser', () => {
     const m = new MongoServerError({ code: 121, errInfo: sample1 })
     const validationError = new MongoValidationError(m)
     const validationErrorsAsString = validationError.getValidationErrorsAsString()

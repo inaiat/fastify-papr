@@ -1,5 +1,5 @@
 import { deepEqual } from 'node:assert'
-import { afterEach, beforeEach, describe, it } from 'node:test'
+import { afterEach, beforeEach, describe, it } from 'vite-plus/test'
 import fastifyPaprPlugin, { asCollection } from '../src/index.js'
 import type { FastifyPapr } from '../src/index.js'
 import { hasDb1Models, hasDb2Models, orderSchema, userSchema } from './helpers/model.js'
@@ -14,7 +14,7 @@ const getRegisteredDbModels = (papr: FastifyPapr) => {
   return papr
 }
 
-await describe('multiple databases', async () => {
+describe('multiple databases', () => {
   let mut_mongoContext1: MongoContext
   let mut_mongoContext2: MongoContext
 
@@ -28,7 +28,7 @@ await describe('multiple databases', async () => {
     await tearDownMongoContext(mut_mongoContext2)
   })
 
-  await it('multiple databases', async () => {
+  it('multiple databases', async () => {
     const { server: fastify } = getConfiguredTestServer()
 
     await fastify.register(fastifyPaprPlugin, {

@@ -1,8 +1,23 @@
 # fastify-papr
 
-![Statements](https://img.shields.io/badge/statements-100%25-brightgreen.svg?style=flat) ![Branches](https://img.shields.io/badge/branches-97.82%25-brightgreen.svg?style=flat) ![Functions](https://img.shields.io/badge/functions-100%25-brightgreen.svg?style=flat) ![Lines](https://img.shields.io/badge/lines-100%25-brightgreen.svg?style=flat)
+![Statements](https://img.shields.io/badge/statements-96.8%25-brightgreen.svg?style=flat) ![Branches](https://img.shields.io/badge/branches-94.02%25-brightgreen.svg?style=flat) ![Functions](https://img.shields.io/badge/functions-96.96%25-brightgreen.svg?style=flat) ![Lines](https://img.shields.io/badge/lines-96.66%25-brightgreen.svg?style=flat)
 
 A fastify Papr plugin integration.
+
+This package is distributed as ESM-only.
+
+## Tooling
+
+This package uses `Vite+` for packaging, testing, formatting, and static checks while keeping `pnpm` scripts as the main interface:
+
+```bash
+pnpm build
+pnpm test
+pnpm lint
+pnpm coverage
+```
+
+The published package ships a single ESM build plus declarations in `dist/`.
 
 ## Getting started
 
@@ -10,13 +25,35 @@ A fastify Papr plugin integration.
 pnpm add @inaiat/fastify-papr @fastify/mongodb
 ```
 
+Runtime requirement: Node.js `>=22.12.0`.
+
+## Breaking Changes in v12.0.0
+
+- The package is now distributed as ESM-only.
+- The CommonJS bundle (`dist/index.cjs`) is no longer published.
+- The minimum supported Node.js version is now `22.12.0`.
+
+### Migration Guide
+
+- Prefer ESM imports:
+
+```ts
+import fastifyPaprPlugin, { asCollection } from '@inaiat/fastify-papr'
+```
+
+- If you still consume it from CommonJS on modern Node.js, load the ESM default export explicitly:
+
+```js
+const { default: fastifyPaprPlugin, asCollection } = require('@inaiat/fastify-papr')
+```
+
 Next, set up the plugin:
 
 ```ts
 import fastifyMongodb from '@fastify/mongodb'
-import fastifyPaprPlugin, { asCollection, FastifyPaprOptions } from ' @inaiat/fastify-papr'
+import fastifyPaprPlugin, { asCollection, type FastifyPaprOptions, type PaprModel } from '@inaiat/fastify-papr'
 import fp from 'fastify-plugin'
-import { Model, schema, types } from 'papr'
+import { schema, types } from 'papr'
 
 const userSchema = schema({
   name: types.string({ required: true, minLength: 10, maxLength: 100 }),
@@ -25,9 +62,11 @@ const userSchema = schema({
 
 const userIndexes = [{ key: { name: 1 } }]
 
+type UserModel = PaprModel<typeof userSchema>
+
 declare module '@inaiat/fastify-papr' {
   interface FastifyPapr {
-    user: Model<typeof userSchema[0], Partial<typeof userSchema[1]>>
+    user: UserModel
   }
 }
 
@@ -39,8 +78,8 @@ export default fp<FastifyPaprOptions>(
 
     await fastify.register(fastifyPaprPlugin, {
       db: fastify.mongo.client.db('test'),
-      models: { 
-        user: asCollection('user', userSchema, userIndexes) 
+      models: {
+        user: asCollection('user', userSchema, userIndexes),
       },
     })
   },
@@ -145,6 +184,7 @@ const nameErrors = validationError.getFieldErrors('name')
 ```
 
 Type changes:
+
 ```diff
 - DocumentFailedValidation → DocumentValidationError
 - PropertiesNotSatisfied → ValidationProperty
@@ -155,5 +195,3 @@ Type changes:
 ## Papr Documentation and examples
 
 To learn more about the code and see additional examples, you can visit the Papr documentation at [plexinc.github.io/papr](https://plexinc.github.io/papr/) and explore test folder on this project.
-
-

@@ -1,119 +1,93 @@
 {
   "name": "@inaiat/fastify-papr",
-  "version": "11.0.0",
+  "version": "12.0.0",
   "description": "Fastify Papr Plugin Integration",
-  "type": "module",
-  "engines": {
-    "node": ">=22"
-  },
-  "packageManager": "pnpm@10.30.3",
-  "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
-    }
-  },
-  "types": "./dist/index.d.ts",
-  "scripts": {
-    "ts:loader": "FASTIFY_AUTOLOAD_TYPESCRIPT=true node --import=tsx/esm",
-    "test": "pnpm ts:loader --test tests/*.ts",
-    "build": "tsup",
-    "validate": "tsc --noEmit",
-    "fmt": "dprint fmt",
-    "lint": "dprint check && oxlint --type-aware --type-check",
-    "lint:fix": "oxlint --fix",
-    "coverage": "pnpm lint && c8 pnpm test",
-    "prepublishOnly": "npm run build",
-    "make-badges": "istanbul-badges-readme",
-    "check-commit": "pnpm lint && pnpm test",
-    "prepare": "husky || true"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/inaiat/fastify-papr.git"
-  },
   "keywords": [
-    "fastify",
-    "mongodb",
-    "papr",
     "database",
-    "model",
-    "schema",
+    "fastify",
+    "fastify-plugin",
     "json",
     "json-schema",
-    "validation",
-    "typescript",
+    "model",
+    "mongodb",
+    "papr",
+    "schema",
     "types",
-    "fastify-plugin"
+    "typescript",
+    "validation"
   ],
+  "homepage": "https://github.com/inaiat/fastify-papr.git",
+  "license": "MIT",
+  "author": "inaiat@gmail.com",
   "contributors": [
     "Inaiat <inaiat@gmail.com>",
     "Daniel Molina <dgmolina.ti@gmail.com>",
     "Murilo Alves <hi@omurilo.dev>"
   ],
-  "license": "MIT",
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "http://opensource.org/licenses/MIT"
-    }
-  ],
-  "homepage": "https://github.com/inaiat/fastify-papr.git",
-  "dependencies": {
-    "fastify-plugin": "^5.1.0",
-    "papr": "^17.0.0"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/inaiat/fastify-papr.git"
   },
-  "peerDependencies": {
-    "fastify": "^5.6",
-    "mongodb": "^7"
-  },
-  "devDependencies": {
-    "@types/node": "^25.3.3",
-    "@types/semver": "^7.7.1",
-    "c8": "^11.0.0",
-    "dprint": "^0.52.0",
-    "husky": "^9.1.7",
-    "istanbul-badges-readme": "^1.9.0",
-    "mongodb": "^7.1.0",
-    "mongodb-memory-server": "^11.0.1",
-    "oxlint": "^1.51.0",
-    "oxlint-tsgolint": "^0.15.0",
-    "semver": "^7.7.4",
-    "tsup": "^8.5.1",
-    "tsx": "^4.21.0",
-    "typescript": "^5.9.3"
+  "directories": {
+    "test": "test"
   },
   "files": [
     "dist"
   ],
-  "directories": {
-    "test": "test"
+  "type": "module",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
   },
-  "tsup": {
-    "sourcemap": true,
-    "dts": true,
-    "clean": true,
-    "bundle": true,
-    "target": "node24",
-    "format": [
-      "esm",
-      "cjs"
-    ],
-    "entry": [
-      "src/**/*.ts"
-    ]
+  "scripts": {
+    "test": "vp test",
+    "build": "vp pack",
+    "validate": "vp check",
+    "fmt": "vp fmt . --write",
+    "lint": "vp check",
+    "lint:fix": "vp check --fix",
+    "coverage": "vp test --coverage",
+    "prepublishOnly": "pnpm build",
+    "make-badges": "istanbul-badges-readme",
+    "check-commit": "pnpm lint && pnpm test",
+    "prepare": "husky || true"
   },
-  "c8": {
-    "reporter": [
-      "text",
-      "json-summary",
-      "lcov"
-    ]
+  "dependencies": {
+    "fastify-plugin": "^5.1.0",
+    "papr": "^17.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6",
+    "@types/semver": "^7.7.1",
+    "@vitest/coverage-v8": "^4.1.4",
+    "husky": "^9.1.7",
+    "istanbul-badges-readme": "^1.9.0",
+    "mongodb": "^7.1.1",
+    "mongodb-memory-server": "^11.0.1",
+    "semver": "^7.7.4",
+    "typescript": "^6.0.3",
+    "vite-plus": "^0.1.18"
+  },
+  "peerDependencies": {
+    "fastify": ">=5.8",
+    "mongodb": ">=7"
   },
   "config": {
     "mongodbMemoryServer": {
       "debug": "0"
     }
   },
-  "author": "inaiat@gmail.com"
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "packageManager": "pnpm@10.30.3",
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://opensource.org/licenses/MIT"
+    }
+  ]
 }

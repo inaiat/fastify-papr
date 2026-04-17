@@ -1,10 +1,10 @@
 import { doesNotThrow, throws } from 'node:assert/strict'
-import { describe, it } from 'node:test'
+import { describe, it } from 'vite-plus/test'
 
 import { ensureMongoDriverVersion, getDetectedMongoDriverVersion } from '../src/mongo-driver-version.js'
 
-void describe('mongo driver version check', () => {
-  void it('accepts supported versions', () => {
+describe('mongo driver version check', () => {
+  it('accepts supported versions', () => {
     doesNotThrow(() => {
       ensureMongoDriverVersion('8.2.5')
     })
@@ -16,7 +16,7 @@ void describe('mongo driver version check', () => {
     })
   })
 
-  void it('rejects unsupported or invalid versions', () => {
+  it('rejects unsupported or invalid versions', () => {
     const message = /requires mongodb driver >=7/i
 
     throws(() => {

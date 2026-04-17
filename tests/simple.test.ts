@@ -1,11 +1,11 @@
 import { deepEqual, rejects } from 'node:assert'
-import { afterEach, beforeEach, describe, it } from 'node:test'
+import { afterEach, beforeEach, describe, it } from 'vite-plus/test'
 import fastifyPaprPlugin, { asCollection } from '../src/index.js'
 import { hasUserModel, userSchema } from './helpers/model.js'
 import type { MongoContext } from './helpers/server.js'
 import { getConfiguredTestServer, setupMongoContext, tearDownMongoContext } from './helpers/server.js'
 
-await describe('simple tests', async () => {
+describe('simple tests', () => {
   let mut_mongoContext: MongoContext
 
   beforeEach(async () => {
@@ -16,7 +16,7 @@ await describe('simple tests', async () => {
     await tearDownMongoContext(mut_mongoContext)
   })
 
-  await it('insert one line using papr plugin', async () => {
+  it('insert one line using papr plugin', async () => {
     const { server: fastify } = getConfiguredTestServer()
 
     await fastify.register(fastifyPaprPlugin, {
@@ -36,7 +36,7 @@ await describe('simple tests', async () => {
     deepEqual(findResult, { _id: result._id, ...user })
   })
 
-  await it('Should papr return erro because name has more than 20 characters', async () => {
+  it('Should papr return erro because name has more than 20 characters', async () => {
     const { server: fastify } = getConfiguredTestServer()
 
     await fastify.register(fastifyPaprPlugin, {

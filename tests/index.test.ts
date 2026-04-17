@@ -1,5 +1,5 @@
 import { equal, rejects } from 'node:assert'
-import { afterEach, beforeEach, describe, it } from 'node:test'
+import { afterEach, beforeEach, describe, it } from 'vite-plus/test'
 import fastifyPaprPlugin, { asCollection } from '../src/index.js'
 import { hasUserModel, userSchema } from './helpers/model.js'
 import type { MongoContext } from './helpers/server.js'
@@ -22,7 +22,7 @@ const seedUsers = async (
   }
 }
 
-await describe('Index', async () => {
+describe('Index', () => {
   let mut_mongoContext: MongoContext
   const usersToInsert = [
     { name: 'Elizeu Drummond', age: 35, phone: '552124561234' },
@@ -39,7 +39,7 @@ await describe('Index', async () => {
     await tearDownMongoContext(mut_mongoContext)
   })
 
-  await it('Test if index exists and works', async () => {
+  it('Test if index exists and works', async () => {
     const { server: fastify } = getConfiguredTestServer()
 
     const db = mut_mongoContext.db
@@ -61,7 +61,7 @@ await describe('Index', async () => {
     equal((await user.find({})).length, 3)
   })
 
-  await it('Missing index should fail', async () => {
+  it('Missing index should fail', async () => {
     const { server: fastify } = getConfiguredTestServer()
 
     const db = mut_mongoContext.db

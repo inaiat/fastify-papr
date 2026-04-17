@@ -5,9 +5,9 @@ import type { IndexDescription } from 'mongodb'
 import type { BaseSchema, SchemaOptions } from 'papr'
 import { ensureMongoDriverVersion } from './mongo-driver-version.js'
 import { paprHelper } from './papr-helper.js'
-import type { FastifyPapr, FastifyPaprOptions, ModelRegistration } from './types.js'
+import type { FastifyPapr, FastifyPaprConnection, FastifyPaprOptions, ModelRegistration } from './types.js'
 
-type RegisteredModels = Awaited<ReturnType<ReturnType<typeof paprHelper>['register']>>
+type RegisteredModels = FastifyPaprConnection
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -40,7 +40,7 @@ const registerNamedModels = (mutableFastify: FastifyInstance, dbName: string, mo
   if (!mutableFastify.hasDecorator('papr')) {
     mutableFastify.decorate('papr', {
       [dbName]: models,
-    })
+    } as FastifyPapr)
     return
   }
 
@@ -52,7 +52,7 @@ const registerNamedModels = (mutableFastify: FastifyInstance, dbName: string, mo
   mutableFastify.papr = {
     ...mutableFastify.papr,
     [dbName]: models,
-  }
+  } as FastifyPapr
 }
 
 const registerDefaultModels = (mutableFastify: FastifyInstance, models: RegisteredModels) => {
@@ -61,7 +61,7 @@ const registerDefaultModels = (mutableFastify: FastifyInstance, models: Register
     throw new Error(`Models already registered: ${items}`)
   }
 
-  mutableFastify.decorate('papr', models)
+  mutableFastify.decorate('papr', models as FastifyPapr)
 }
 
 /**
@@ -71,11 +71,7 @@ const registerDefaultModels = (mutableFastify: FastifyInstance, models: Register
 export const fastifyPaprPlugin: FastifyPluginAsync<FastifyPaprOptions> = async (mutable_fastify, options) => {
   ensureMongoDriverVersion()
 
-  const helper = paprHelper(
-    mutable_fastify,
-    options.db,
-    options.disableSchemaReconciliation,
-  )
+  const helper = paprHelper(mutable_fastify, options.db, options.disableSchemaReconciliation)
 
   const models = await helper.register(options.models)
   const { name: dbName } = options

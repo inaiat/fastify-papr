@@ -1,6 +1,6 @@
 import { MongoServerError } from 'mongodb'
 import { deepEqual, rejects } from 'node:assert'
-import { afterEach, beforeEach, describe, it } from 'node:test'
+import { afterEach, beforeEach, describe, it } from 'vite-plus/test'
 import fastifyPaprPlugin, { asCollection } from '../src/index.js'
 import {
   hasOrderDefaultsModel,
@@ -32,7 +32,7 @@ const getOrderDefaultsModel = (papr: Parameters<typeof hasOrderDefaultsModel>[0]
   return papr.orderDefaults
 }
 
-await describe('multiple collections', async () => {
+describe('multiple collections', () => {
   let mut_mongoContext: MongoContext
 
   beforeEach(async () => {
@@ -43,7 +43,7 @@ await describe('multiple collections', async () => {
     await tearDownMongoContext(mut_mongoContext)
   })
 
-  await it('multiple collections insert and retrieve', async () => {
+  it('multiple collections insert and retrieve', async () => {
     const { server: fastify } = getConfiguredTestServer()
 
     await fastify.register(fastifyPaprPlugin, {
@@ -66,7 +66,7 @@ await describe('multiple collections', async () => {
     deepEqual(await orderModel.findById(orderResult._id), { _id: orderResult._id, ...order })
   })
 
-  await it('validation failed with two col', async () => {
+  it('validation failed with two col', async () => {
     const { server: fastify } = getConfiguredTestServer()
 
     await fastify.register(fastifyPaprPlugin, {
@@ -86,7 +86,7 @@ await describe('multiple collections', async () => {
     await rejects(async () => orderModel.insertOne(order), MongoServerError)
   })
 
-  await it('one collection with default values, insert and retrieve', async () => {
+  it('one collection with default values, insert and retrieve', async () => {
     const { server: fastify } = getConfiguredTestServer()
 
     await fastify.register(fastifyPaprPlugin, {
