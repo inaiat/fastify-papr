@@ -36,7 +36,7 @@ describe('simple tests', () => {
     deepEqual(findResult, { _id: result._id, ...user })
   })
 
-  it('Should papr return erro because name has more than 20 characters', async () => {
+  it('Should papr return error because name has more than 20 characters', async () => {
     const { server: fastify } = getConfiguredTestServer()
 
     await fastify.register(fastifyPaprPlugin, {
