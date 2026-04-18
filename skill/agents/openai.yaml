@@ -1,4 +1,4 @@
 interface:
   display_name: 'Fastify Papr'
   short_description: 'Use and best practices for fastify-papr'
-  default_prompt: 'Use $fastify-papr to integrate Papr with Fastify, model collections safely, and handle Mongo validation errors correctly.'
+  default_prompt: 'Use $fastify-papr to integrate Papr with Fastify, register typed models safely, choose the right single-db or multi-db pattern, and handle Mongo validation errors correctly.'

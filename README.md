@@ -2,52 +2,29 @@
 
 ![Statements](https://img.shields.io/badge/statements-96.8%25-brightgreen.svg?style=flat) ![Branches](https://img.shields.io/badge/branches-94.02%25-brightgreen.svg?style=flat) ![Functions](https://img.shields.io/badge/functions-96.96%25-brightgreen.svg?style=flat) ![Lines](https://img.shields.io/badge/lines-96.66%25-brightgreen.svg?style=flat)
 
-A fastify Papr plugin integration.
+**Type-safe MongoDB for Fastify.** A first-class [Papr](https://plexinc.github.io/papr/) integration that turns your schemas into fully typed collections, decorated right onto your Fastify instance — no boilerplate, no `any`, no runtime surprises.
 
-This package is distributed as ESM-only.
-
-## Tooling
-
-This package uses `Vite+` for packaging, testing, formatting, and static checks while keeping `pnpm` scripts as the main interface:
-
-```bash
-pnpm build
-pnpm test
-pnpm lint
-pnpm coverage
+```ts
+const user = await fastify.papr.user.insertOne(req.body) // fully typed, validated, ready
 ```
 
-The published package ships a single ESM build plus declarations in `dist/`.
+## Why fastify-papr?
 
-## Getting started
+- **End-to-end type safety** — Papr schemas become TypeScript types automatically. Your routes, queries, and inserts are checked at compile time.
+- **MongoDB-native validation** — Schemas compile to native MongoDB `$jsonSchema` validators, so invalid data is rejected at the database layer, not just in application code.
+- **First-class error handling** — `MongoValidationError` parses MongoDB's cryptic validation errors into structured, field-level details you can return to clients.
+- **Zero-ceremony DI** — Register models once with `asCollection(...)`, access them anywhere via `fastify.papr.<model>`.
+- **Modern by default** — ESM-only, Node.js `>=22.12.0`, built on top of `@fastify/mongodb`.
+
+## Install
 
 ```bash
 pnpm add @inaiat/fastify-papr @fastify/mongodb
 ```
 
-Runtime requirement: Node.js `>=22.12.0`.
+## Quick start
 
-## Breaking Changes in v12.0.0
-
-- The package is now distributed as ESM-only.
-- The CommonJS bundle (`dist/index.cjs`) is no longer published.
-- The minimum supported Node.js version is now `22.12.0`.
-
-### Migration Guide
-
-- Prefer ESM imports:
-
-```ts
-import fastifyPaprPlugin, { asCollection } from '@inaiat/fastify-papr'
-```
-
-- If you still consume it from CommonJS on modern Node.js, load the ESM default export explicitly:
-
-```js
-const { default: fastifyPaprPlugin, asCollection } = require('@inaiat/fastify-papr')
-```
-
-Next, set up the plugin:
+Define a schema, register the plugin, and you're done:
 
 ```ts
 import fastifyMongodb from '@fastify/mongodb'
@@ -87,13 +64,14 @@ export default fp<FastifyPaprOptions>(
 )
 ```
 
-How to use:
+## Using your models
+
+Access fully typed collections anywhere through `fastify.papr`:
 
 ```ts
 import { FastifyPluginAsync } from 'fastify'
 import { Static, Type } from '@sinclair/typebox'
-import { MongoServerError } from 'mongodb'
-import { MongoValidationError, isMongoServerError } from '@inaiat/fastify-papr'
+import { extractValidationErrors, isMongoServerError } from '@inaiat/fastify-papr'
 
 const userDto = Type.Object({
   name: Type.String({ maxLength: 100, minLength: 10 }),
@@ -103,37 +81,19 @@ const userDto = Type.Object({
 const userRoute: FastifyPluginAsync = async (fastify) => {
   fastify.post<{ readonly Body: Static<typeof userDto> }>(
     '/user',
-    {
-      schema: {
-        body: userDto,
-      },
-    },
+    { schema: { body: userDto } },
     async (req, reply) => {
       try {
-        const result = await fastify.papr.user.insertOne(req.body)
-        return result
+        return await fastify.papr.user.insertOne(req.body)
       } catch (error) {
-        // Check if it's a MongoDB validation error
         if (isMongoServerError(error) && error.code === 121) {
-          const validationError = new MongoValidationError(error)
-
-          // Log or process the validation details
-          console.error('Validation failed:', validationError.getValidationErrorsAsString())
-
-          // Example: Get errors for a specific field
-          const nameErrors = validationError.getFieldErrors('name')
-          if (nameErrors) {
-            console.error('Name field errors:', nameErrors)
+          const details = extractValidationErrors(error)
+          if (details) {
+            fastify.log.error({ details }, 'validation failed')
+            return reply.status(400).send({ message: 'Validation failed', errors: details })
           }
-
-          // Return a 400 Bad Request with validation details
-          return reply.status(400).send({
-            message: 'Validation failed',
-            errors: validationError.validationErrors,
-          })
         }
 
-        // Handle other errors
         fastify.log.error(error)
         return reply.status(500).send({ message: 'Internal Server Error' })
       }
@@ -144,17 +104,46 @@ const userRoute: FastifyPluginAsync = async (fastify) => {
 export default userRoute
 ```
 
-## Breaking Changes in v9.0.0
+If you need field-level inspection after the MongoDB validation guard, wrap the error in `MongoValidationError` and use helpers like `getFieldErrors('name')`.
 
-### MongoDB Validation Error Handling
+## Learn more
 
-We've consolidated and improved the MongoDB validation error handling in v2.0.0:
+- [Papr documentation](https://plexinc.github.io/papr/) — schema options, operators, and advanced queries
+- Explore the `tests/` folder in this repo for runnable examples
 
-- The `SimpleDocFailedValidationError` and related types have been replaced with a new `MongoValidationError` class
-- The error extraction logic has been improved for better type safety and reliability
-- New helper methods have been added for easier access to validation errors
+---
 
-#### Migration Guide
+## Requirements
+
+- Node.js `>=22.12.0`
+- MongoDB server (any version supported by the official driver)
+- ESM — this package is published as ESM-only
+
+## Breaking changes in v12.0.0
+
+- The package is now distributed as ESM-only.
+- The CommonJS bundle (`dist/index.cjs`) is no longer published.
+- The minimum supported Node.js version is now `22.12.0`.
+
+### Migration
+
+Prefer ESM imports:
+
+```ts
+import fastifyPaprPlugin, { asCollection } from '@inaiat/fastify-papr'
+```
+
+If you still consume it from CommonJS on modern Node.js, load the ESM default export explicitly:
+
+```js
+const { default: fastifyPaprPlugin, asCollection } = require('@inaiat/fastify-papr')
+```
+
+## Breaking changes in v9.0.0
+
+### MongoDB validation error handling
+
+`SimpleDocFailedValidationError` was replaced with a consolidated `MongoValidationError` class with better type safety and new helper methods.
 
 Replace imports:
 
@@ -176,14 +165,13 @@ Use the new class and methods:
 + const errorJson = validationError.getValidationErrorsAsString()
 ```
 
-New features:
+New: get validation errors for a specific field:
 
-```typescript
-// Get validation errors for a specific field
+```ts
 const nameErrors = validationError.getFieldErrors('name')
 ```
 
-Type changes:
+Type renames:
 
 ```diff
 - DocumentFailedValidation → DocumentValidationError
@@ -192,6 +180,15 @@ Type changes:
 - SimpleDocFailedValidation → ValidationErrors
 ```
 
-## Papr Documentation and examples
+## Development
 
-To learn more about the code and see additional examples, you can visit the Papr documentation at [plexinc.github.io/papr](https://plexinc.github.io/papr/) and explore test folder on this project.
+This package uses `Vite+` for packaging, testing, formatting, and static checks. `pnpm` scripts are the main interface:
+
+```bash
+pnpm build
+pnpm test
+pnpm lint
+pnpm coverage
+```
+
+The published package ships a single ESM build plus declarations in `dist/`.

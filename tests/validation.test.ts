@@ -36,6 +36,24 @@ const assertFieldError = (
   equal(fieldErrors?.[0]?.operatorName, expectedOperatorName)
 }
 
+const assertAdditionalPropertiesCaptured = (
+  validationError: MongoValidationError,
+  expectedFields: readonly string[],
+) => {
+  const additionalPropsRule = validationError.validationErrors?.[0]?.additionalProperties
+  ok(additionalPropsRule, 'expected additionalProperties rule to be captured')
+  const flaggedFields = new Set(additionalPropsRule.flatMap((entry) => Object.keys(entry)))
+  equal(flaggedFields.size, expectedFields.length)
+
+  for (const fieldName of expectedFields) {
+    ok(flaggedFields.has(fieldName), `expected ${fieldName} to be flagged as additional`)
+    const fieldErrors = validationError.getFieldErrors(fieldName)
+    equal(fieldErrors?.length, 1)
+    equal(fieldErrors?.[0]?.operatorName, 'additionalProperties')
+    deepEqual(fieldErrors?.[0]?.specifiedAs, { additionalProperties: false })
+  }
+}
+
 const assertDocumentFailedWithNameAndAge = (error: unknown) => {
   const validationError = getValidationError(error)
 
@@ -59,8 +77,13 @@ const assertDocumentFailedWithNameAndAge = (error: unknown) => {
   return true
 }
 
-const assertNonMongoServerErrors = (genericError: Error, notAnError: { code: number; message: string }) => {
+const assertNonMongoServerErrors = (
+  genericError: Error,
+  errorWithCode: Error & { code: number },
+  notAnError: { code: number; message: string },
+) => {
   equal(isMongoServerError(genericError), false)
+  equal(isMongoServerError(errorWithCode), false)
   equal(isMongoServerError(notAnError), false)
   equal(isMongoServerError(null), false)
 }
@@ -173,6 +196,40 @@ describe('Validation', () => {
     await rejects(async () => papr.user.insertOne(user), assertDocumentFailedWithNameAndAge)
   })
 
+  it('document failed with additional properties', async () => {
+    const { server: fastify } = getConfiguredTestServer()
+
+    await fastify.register(fastifyPaprPlugin, {
+      db: mut_mongoContext.db,
+      models: {
+        user: asCollection('user', userSchema),
+      },
+    })
+    const papr = fastify.papr
+    if (!hasUserModel(papr)) {
+      throw new Error('User model not registered')
+    }
+
+    const userCollection = mut_mongoContext.db.collection('user')
+    const userWithExtras = {
+      name: 'Valid Name',
+      phone: '552124561234',
+      age: 40,
+      email: 'extra@example.com',
+      nickname: 'extra-nick',
+    }
+    await rejects(
+      async () => userCollection.insertOne(userWithExtras),
+      (error) => {
+        const validationError = getValidationError(error)
+        ok(validationError.hasValidationFailures)
+        assertAdditionalPropertiesCaptured(validationError, ['email', 'nickname'])
+        equal(validationError.getFieldErrors('name'), undefined)
+        return true
+      },
+    )
+  })
+
   it('simple doc failed validation should result undefined when schema rules not satisfied', async () => {
     const { server: fastify } = getConfiguredTestServer()
 
@@ -224,8 +281,21 @@ describe('Validation', () => {
 
     ok(isMongoServerError(validationError))
     ok(isMongoServerError(duplicateKeyError))
-    ok(isMongoServerError(errorWithCode))
-    assertNonMongoServerErrors(genericError, notAnError)
+    assertNonMongoServerErrors(genericError, errorWithCode, notAnError)
+  })
+
+  void it('extractValidationErrors accepts unknown and returns undefined for non-Mongo errors', () => {
+    const fakeMongoValidationError = Object.assign(new Error('boom'), {
+      code: 121,
+      errInfo: sample1,
+    })
+
+    equal(extractValidationErrors(new Error('boom')), undefined)
+    equal(extractValidationErrors(fakeMongoValidationError), undefined)
+    equal(extractValidationErrors({ message: 'fake', code: 121 }), undefined)
+    equal(extractValidationErrors(null), undefined)
+    equal(extractValidationErrors(undefined), undefined) // eslint-disable-line eslint-plugin-unicorn/no-useless-undefined
+    equal(extractValidationErrors('not an error'), undefined)
   })
 
   void it('extractValidationErrors edge cases', () => {
