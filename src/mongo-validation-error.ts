@@ -43,6 +43,10 @@ export type DocumentValidationError = {
         operatorName: string
         /** Properties that didn't satisfy the validation rules */
         propertiesNotSatisfied?: readonly ValidationProperty[] | null
+        /** Names of properties that were present but not allowed by the schema (for the `additionalProperties` rule) */
+        additionalProperties?: readonly string[] | null
+        /** The specification that was violated for this rule */
+        specifiedAs?: Record<string, unknown>
       },
     ]
   }
@@ -60,11 +64,7 @@ export type ValidationErrors = Record<string, Record<string, ValidationDetail[]>
  * @returns True if the error is a MongoDB server error
  */
 export function isMongoServerError(error: unknown): error is MongoServerError {
-  if (error instanceof MongoServerError) {
-    return true
-  }
-
-  return error instanceof Error && 'code' in error && typeof error.code === 'number'
+  return error instanceof MongoServerError
 }
 
 /**
@@ -78,10 +78,10 @@ const formatValidationProperties = (properties: readonly ValidationProperty[]) =
 
 /**
  * Attempts to extract validation error details from a MongoDB server error
- * @param error The MongoDB server error to process
+ * @param error The error to process — may be any unknown value
  * @returns A simplified representation of validation errors or undefined if not a validation error
  */
-export function extractValidationErrors(error: Readonly<MongoServerError>): ValidationErrors | undefined {
+export function extractValidationErrors(error: unknown): ValidationErrors | undefined {
   // Check if this is actually a MongoDB validation error
   if (!isMongoServerError(error) || error.code !== 121) {
     return undefined
@@ -96,9 +96,30 @@ export function extractValidationErrors(error: Readonly<MongoServerError>): Vali
   const schemaRulesNotSatisfied = errInfo.details.schemaRulesNotSatisfied
 
   // Transform the schema rules into a more user-friendly format
-  const result: ValidationErrors = schemaRulesNotSatisfied.map((rule) => ({
-    [rule.operatorName]: formatValidationProperties(rule.propertiesNotSatisfied ?? []),
-  }))
+  const result: ValidationErrors = schemaRulesNotSatisfied.map((rule) => {
+    const additionalProps = rule.additionalProperties
+    if (
+      rule.operatorName === 'additionalProperties' &&
+      additionalProps !== undefined &&
+      additionalProps !== null &&
+      additionalProps.length > 0
+    ) {
+      const detail: ValidationDetail = {
+        operatorName: 'additionalProperties',
+        specifiedAs: rule.specifiedAs,
+        reason: 'property is not allowed by the schema',
+      }
+      const properties = additionalProps.map((propertyName) => ({
+        propertyName,
+        details: [detail],
+      }))
+      return { [rule.operatorName]: formatValidationProperties(properties) }
+    }
+
+    return {
+      [rule.operatorName]: formatValidationProperties(rule.propertiesNotSatisfied ?? []),
+    }
+  })
 
   return result.length > 0 ? result : undefined
 }

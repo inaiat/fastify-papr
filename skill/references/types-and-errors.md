@@ -9,6 +9,7 @@ The library exports helper types for building a typed application layer around P
 - `PaprSchemaDefinition<TSchema>`: schema options derived from a schema tuple
 - `PaprModel<TSchema>`: concrete Papr model type for a schema tuple
 - `FastifyPapr`: augmented shape exposed at `fastify.papr`
+- `FastifyPaprModel` and `FastifyPaprConnection`: lower-level model and named-connection building blocks
 - `FastifyPaprOptions`: plugin options
 - `ModelRegistration` and `ModelRegistrationPair`: registration helpers used by the plugin
 
@@ -48,6 +49,7 @@ Best practices:
 
 - Augment only the keys your service actually registers.
 - Keep augmentation next to the plugin-registration module or in a dedicated types module loaded by TypeScript.
+- For named connections, model the nested shape explicitly instead of falling back to broad index signatures.
 - When working inside this library repo, use the type tests as the contract for exported helpers.
 
 ## Type-test guidance for this repo
@@ -62,9 +64,28 @@ Use `expectTypeOf` for compile-time contracts. Prefer tests that prove the publi
 
 ## Validation error handling
 
-`isMongoServerError` is only the first gate. For schema validation failures, also check `error.code === 121`.
+Use `isMongoServerError(error) && error.code === 121` before calling `extractValidationErrors(error)` or creating `MongoValidationError`. This keeps the validation path limited to real MongoDB validation failures and avoids treating lookalike errors as Mongo server errors.
 
 Recommended route pattern:
+
+```ts
+import { extractValidationErrors, isMongoServerError } from '@inaiat/fastify-papr'
+
+try {
+  await fastify.papr.user.insertOne(req.body)
+} catch (error) {
+  if (isMongoServerError(error) && error.code === 121) {
+    const details = extractValidationErrors(error)
+    if (details) {
+      return reply.status(400).send({ message: 'Validation failed', errors: details })
+    }
+  }
+
+  throw error
+}
+```
+
+When route behavior depends on a specific field failure or you need richer logs, use `MongoValidationError`:
 
 ```ts
 import { MongoValidationError, isMongoServerError } from '@inaiat/fastify-papr'
@@ -74,6 +95,12 @@ try {
 } catch (error) {
   if (isMongoServerError(error) && error.code === 121) {
     const validationError = new MongoValidationError(error)
+
+    fastify.log.warn({ validation: validationError.getValidationErrorsAsString() }, 'mongo schema validation failed')
+
+    if (validationError.getFieldErrors('email') !== undefined) {
+      return reply.status(400).send({ message: 'Email is invalid' })
+    }
 
     return reply.status(400).send({
       message: 'Validation failed',
@@ -85,9 +112,11 @@ try {
 }
 ```
 
+Use `isMongoServerError` when you need to distinguish other Mongo server errors as well, such as duplicate key errors with `code === 11000`.
+
 Prefer these helpers over manual `errInfo` traversal:
 
-- `extractValidationErrors(error)`: returns the simplified structured error payload or `undefined`
+- `extractValidationErrors(error)`: accepts `unknown`; returns the simplified structured payload or `undefined`
 - `new MongoValidationError(error)`: wraps the Mongo error and exposes helper methods
 - `validationErrors`: structured validation payload
 - `hasValidationFailures`: boolean shortcut
@@ -98,4 +127,5 @@ Best practices:
 
 - Return the structured `validationErrors` payload to API clients when appropriate.
 - Use `getValidationErrorsAsString()` for logs, not as the primary application contract.
+- Expect `hasValidationFailures === false` for non-validation `MongoServerError` values such as duplicate-key errors.
 - Avoid treating every `MongoServerError` as a validation error; duplicate key and other server errors need different handling.

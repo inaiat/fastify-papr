@@ -73,6 +73,8 @@ describe('mongo validation error types', () => {
           {
             operatorName: string
             propertiesNotSatisfied?: readonly ValidationProperty[] | null
+            additionalProperties?: readonly string[] | null
+            specifiedAs?: Record<string, unknown>
           },
         ]
       }
@@ -86,7 +88,7 @@ describe('mongo validation error types', () => {
   })
 
   it('exposes the expected function and class signatures', () => {
-    expectTypeOf(extractValidationErrors).parameters.toEqualTypeOf<[Readonly<MongoServerError>]>()
+    expectTypeOf(extractValidationErrors).parameters.toEqualTypeOf<[unknown]>()
     expectTypeOf(extractValidationErrors).returns.toEqualTypeOf<ValidationErrors>()
     expectTypeOf<MongoValidationError['getValidationErrorsAsString']>().parameters.toEqualTypeOf<[]>()
     expectTypeOf<MongoValidationError['getValidationErrorsAsString']>().returns.toEqualTypeOf<string | undefined>()
