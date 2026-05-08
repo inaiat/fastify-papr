@@ -1,4 +1,6 @@
+allowBuilds:
+  fallow: true
+  mongodb-memory-server: true
 onlyBuiltDependencies:
-  - dprint
   - esbuild
   - mongodb-memory-server

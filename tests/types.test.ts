@@ -2,8 +2,9 @@ import type { FastifyPluginAsync } from 'fastify'
 import type { Db } from 'mongodb'
 import type { Model } from 'papr'
 import { describe, expectTypeOf, it } from 'vite-plus/test'
-import fastifyPaprPlugin, {
+import defaultFastifyPaprPlugin, {
   asCollection,
+  fastifyPaprPlugin,
   type FastifyPapr,
   type FastifyPaprOptions,
   type ModelRegistration,
@@ -51,6 +52,7 @@ describe('public type exports', () => {
       models: ModelRegistrationPair
       name?: string
     }>()
+    expectTypeOf(defaultFastifyPaprPlugin).toEqualTypeOf<typeof fastifyPaprPlugin>()
     expectTypeOf(fastifyPaprPlugin).toExtend<FastifyPluginAsync<FastifyPaprOptions>>()
   })
 
