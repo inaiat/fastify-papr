@@ -3,7 +3,7 @@ import type { Db } from 'mongodb'
 import { MongoClient } from 'mongodb'
 import { MongoMemoryServer } from 'mongodb-memory-server'
 
-export const getTestServer = () => {
+const getTestServer = () => {
   const server = fastify({ logger: true })
 
   server.setErrorHandler((error, _, reply) => {
@@ -14,7 +14,7 @@ export const getTestServer = () => {
   return server
 }
 
-export const getRegisteredTestServer = () => {
+const getRegisteredTestServer = () => {
   const server = getTestServer()
   return { server }
 }
@@ -24,7 +24,7 @@ export const getConfiguredTestServer = () => {
   return { server }
 }
 
-export const createMongoServer = async () =>
+const createMongoServer = async () =>
   MongoMemoryServer.create({
     binary: {
       version: '8.2.5',

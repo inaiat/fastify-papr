@@ -1,6 +1,9 @@
 import { defineConfig } from 'vite-plus'
 
 export default defineConfig({
+  staged: {
+    '*': 'vp check --fix',
+  },
   fmt: {
     ignorePatterns: ['coverage/**', 'dist/**', 'node_modules/**', 'report/**', '**/*-lock.json'],
     printWidth: 120,

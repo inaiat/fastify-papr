@@ -1,0 +1,22 @@
+# fallow.toml - Codebase analysis configuration
+# See https://docs.fallow.tools for documentation
+
+entry = ["src/index.{ts,tsx,js,jsx}", "src/main.{ts,tsx,js,jsx}"]
+
+publicPackages = ["@inaiat/fastify-papr"]
+
+ignoreExports = [{ file = "src/fastify-papr-plugin.ts", exports = ["default"] }]
+
+usedClassMembers = [{ extends = "Error", members = ["getValidationErrorsAsString", "getFieldErrors"] }]
+
+[duplicates]
+# Common additions (uncomment to enable):
+ignore = [
+  "**/tests/**", # Relay, GraphQL Code Generator
+]
+
+[health]
+ignore = ["tests/**"]
+
+# Per-issue-type severity: "error" (fail CI), "warn" (report only), "off" (ignore)
+[rules]

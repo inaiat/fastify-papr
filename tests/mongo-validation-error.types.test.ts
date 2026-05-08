@@ -3,8 +3,8 @@ import { describe, expectTypeOf, it } from 'vite-plus/test'
 import {
   extractValidationErrors,
   isMongoServerError,
+  MongoValidationError,
   type DocumentValidationError,
-  type MongoValidationError,
   type ValidationDetail,
   type ValidationErrors,
   type ValidationProperty,
@@ -96,6 +96,13 @@ describe('mongo validation error types', () => {
     expectTypeOf<MongoValidationError['getFieldErrors']>().returns.toEqualTypeOf<ValidationDetail[] | undefined>()
     expectTypeOf<MongoValidationError['validationErrors']>().toEqualTypeOf<ValidationErrors | undefined>()
     expectTypeOf<MongoValidationError['hasValidationFailures']>().toEqualTypeOf<boolean>()
+  })
+
+  it('keeps MongoValidationError public fields writable for compatibility', () => {
+    const validationError = new MongoValidationError(new MongoServerError({ code: 121 }))
+
+    validationError.validationErrors = undefined
+    validationError.hasValidationFailures = false
   })
 
   it('narrows unknown values with the Mongo server error type guard', () => {

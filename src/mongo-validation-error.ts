@@ -1,5 +1,7 @@
 import { MongoServerError } from 'mongodb'
 
+const MONGO_DOCUMENT_VALIDATION_ERROR_CODE = 121
+
 /**
  * Represents details about a property that failed validation
  */
@@ -52,6 +54,9 @@ export type DocumentValidationError = {
   }
 }
 
+type ValidationRule = NonNullable<NonNullable<DocumentValidationError['details']>['schemaRulesNotSatisfied']>[number]
+type FieldErrorMap = Record<string, ValidationDetail[]>
+
 /**
  * A simplified representation of MongoDB validation errors
  * Maps operator names to property details for easier client-side handling
@@ -76,6 +81,32 @@ export function isMongoServerError(error: unknown): error is MongoServerError {
 const formatValidationProperties = (properties: readonly ValidationProperty[]) =>
   properties.map((prop) => ({ [prop.propertyName]: prop.details }))
 
+const hasAdditionalProperties = (
+  rule: ValidationRule,
+): rule is ValidationRule & { additionalProperties: readonly string[] } =>
+  rule.operatorName === 'additionalProperties' && (rule.additionalProperties ?? []).length > 0
+
+const formatAdditionalPropertiesRule = (rule: ValidationRule & { additionalProperties: readonly string[] }) => {
+  const detail: ValidationDetail = {
+    operatorName: 'additionalProperties',
+    specifiedAs: rule.specifiedAs,
+    reason: 'property is not allowed by the schema',
+  }
+  const properties = rule.additionalProperties.map((propertyName) => ({
+    propertyName,
+    details: [detail],
+  }))
+
+  return { [rule.operatorName]: formatValidationProperties(properties) }
+}
+
+const formatValidationRule = (rule: ValidationRule) =>
+  hasAdditionalProperties(rule)
+    ? formatAdditionalPropertiesRule(rule)
+    : { [rule.operatorName]: formatValidationProperties(rule.propertiesNotSatisfied ?? []) }
+
+const getRuleProperties = (ruleSet: Record<string, FieldErrorMap[]>) => Object.values(ruleSet).flat()
+
 /**
  * Attempts to extract validation error details from a MongoDB server error
  * @param error The error to process — may be any unknown value
@@ -83,45 +114,18 @@ const formatValidationProperties = (properties: readonly ValidationProperty[]) =
  */
 export function extractValidationErrors(error: unknown): ValidationErrors | undefined {
   // Check if this is actually a MongoDB validation error
-  if (!isMongoServerError(error) || error.code !== 121) {
+  if (!isMongoServerError(error) || error.code !== MONGO_DOCUMENT_VALIDATION_ERROR_CODE) {
     return undefined
   }
 
   // Safely extract schema rules not satisfied
-  const errInfo = error.errInfo as DocumentValidationError | undefined
-  if (!errInfo?.details?.schemaRulesNotSatisfied?.length) {
+  const schemaRulesNotSatisfied =
+    (error.errInfo as DocumentValidationError | undefined)?.details?.schemaRulesNotSatisfied ?? []
+  if (schemaRulesNotSatisfied.length === 0) {
     return undefined
   }
 
-  const schemaRulesNotSatisfied = errInfo.details.schemaRulesNotSatisfied
-
-  // Transform the schema rules into a more user-friendly format
-  const result: ValidationErrors = schemaRulesNotSatisfied.map((rule) => {
-    const additionalProps = rule.additionalProperties
-    if (
-      rule.operatorName === 'additionalProperties' &&
-      additionalProps !== undefined &&
-      additionalProps !== null &&
-      additionalProps.length > 0
-    ) {
-      const detail: ValidationDetail = {
-        operatorName: 'additionalProperties',
-        specifiedAs: rule.specifiedAs,
-        reason: 'property is not allowed by the schema',
-      }
-      const properties = additionalProps.map((propertyName) => ({
-        propertyName,
-        details: [detail],
-      }))
-      return { [rule.operatorName]: formatValidationProperties(properties) }
-    }
-
-    return {
-      [rule.operatorName]: formatValidationProperties(rule.propertiesNotSatisfied ?? []),
-    }
-  })
-
-  return result.length > 0 ? result : undefined
+  return schemaRulesNotSatisfied.map(formatValidationRule)
 }
 
 /**
@@ -130,16 +134,16 @@ export function extractValidationErrors(error: unknown): ValidationErrors | unde
  */
 export class MongoValidationError extends Error {
   /** The extracted validation rules that weren't satisfied */
-  validationErrors?: ValidationErrors
+  public validationErrors?: ValidationErrors
 
   /** Flag indicating whether this is a document validation error */
-  hasValidationFailures: boolean
+  public hasValidationFailures: boolean
 
   /**
    * Creates an instance from a MongoDB server error
    * @param mongoError The original MongoDB error
    */
-  constructor(mongoError: Readonly<MongoServerError>) {
+  public constructor(mongoError: Readonly<MongoServerError>) {
     super(mongoError.message, { cause: mongoError })
     this.validationErrors = extractValidationErrors(mongoError)
     this.hasValidationFailures = this.validationErrors !== undefined
@@ -149,8 +153,8 @@ export class MongoValidationError extends Error {
    * Returns the validation errors as a JSON string
    * @returns A JSON string of the validation errors or undefined if not a validation error
    */
-  getValidationErrorsAsString(): string | undefined {
-    return this.hasValidationFailures ? JSON.stringify(this.validationErrors) : undefined
+  public getValidationErrorsAsString(): string | undefined {
+    return JSON.stringify(this.validationErrors)
   }
 
   /**
@@ -158,22 +162,8 @@ export class MongoValidationError extends Error {
    * @param fieldName The field name to find errors for
    * @returns Array of validation details for the field or undefined if none found
    */
-  getFieldErrors(fieldName: string): ValidationDetail[] | undefined {
-    const validationErrors = this.validationErrors
-    if (!this.hasValidationFailures || validationErrors === undefined || validationErrors.length === 0) {
-      return undefined
-    }
-
-    for (const ruleSet of validationErrors) {
-      for (const [, properties] of Object.entries(ruleSet)) {
-        for (const property of properties) {
-          if (fieldName in property) {
-            return property[fieldName]
-          }
-        }
-      }
-    }
-
-    return undefined
+  public getFieldErrors(fieldName: string): ValidationDetail[] | undefined {
+    const fieldErrors = this.validationErrors?.flatMap(getRuleProperties).find((property) => fieldName in property)
+    return fieldErrors?.[fieldName]
   }
 }

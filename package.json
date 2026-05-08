@@ -1,6 +1,6 @@
 {
   "name": "@inaiat/fastify-papr",
-  "version": "12.0.1",
+  "version": "12.1.0",
   "description": "Fastify Papr Plugin Integration",
   "keywords": [
     "database",
@@ -45,10 +45,11 @@
   "scripts": {
     "test": "vp test",
     "build": "vp pack",
-    "validate": "vp check",
     "fmt": "vp fmt . --write",
     "lint": "vp check",
-    "lint:fix": "vp check --fix",
+    "check": "vp check",
+    "check:fix": "vp check --fix",
+    "analyze": "fallow",
     "coverage": "vp test --coverage",
     "prepublishOnly": "pnpm build",
     "make-badges": "istanbul-badges-readme",
@@ -57,19 +58,18 @@
   },
   "dependencies": {
     "fastify-plugin": "^5.1.0",
-    "papr": "^17.0.0"
+    "papr": "^17.1.0"
   },
   "devDependencies": {
-    "@types/node": "^25.6",
+    "@types/node": "^25.6.0",
     "@types/semver": "^7.7.1",
-    "@vitest/coverage-v8": "^4.1.4",
-    "husky": "^9.1.7",
+    "@vitest/coverage-v8": "^4.1.5",
+    "fallow": "^2.66.2",
     "istanbul-badges-readme": "^1.9.0",
-    "mongodb": "^7.1.1",
-    "mongodb-memory-server": "^11.0.1",
-    "semver": "^7.7.4",
+    "mongodb": "^7.2.0",
+    "mongodb-memory-server": "^11.1.0",
     "typescript": "^6.0.3",
-    "vite-plus": "^0.1.18"
+    "vite-plus": "^0.1.20"
   },
   "peerDependencies": {
     "fastify": ">=5.8",
@@ -83,7 +83,7 @@
   "engines": {
     "node": ">=22.12.0"
   },
-  "packageManager": "pnpm@10.30.3",
+  "packageManager": "pnpm@11.0.8",
   "licenses": [
     {
       "type": "MIT",
